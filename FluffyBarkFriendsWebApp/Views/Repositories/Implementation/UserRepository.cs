@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FluffyBarkFriendsWebApp.Models.Database;
+using FluffyBarkFriendsWebApp.Views.Repositories.Interface;
 
 namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly FluffyBarkFriendsWebAppContext _context;
 
@@ -11,33 +12,35 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         {
             _context = context;
         }
-        public Task<List<User>> GetActiveUsersAsync()
+
+        public Task<List<User>> GetAllAsync()
         {
-                return _context.Users
+            return _context.Users
                 .AsNoTracking()
                 .Where(x => x.IsActive)
                 .OrderBy(x => x.FullName)
                 .ToListAsync();
         }
 
-        public Task<User?> FindByIdAsync(int userId)
+        public Task<User?> GetByIdAsync(int id)
         {
             return _context.Users
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.IsActive);
+                .FirstOrDefaultAsync(x => x.UserId == id && x.IsActive);
         }
-        public Task<User?> FindByUsernameAsync(string username)
+
+        public Task<User?> GetByUsernameAsync(string username)
         {
             return _context.Users
                 .FirstOrDefaultAsync(x => x.Username == username && x.IsActive);
         }
 
-        public async Task CreateUserAsync(User user)
+        public async Task AddAsync(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateUser(User user)
+        public async Task UpdateAsync(User user)
         {
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
@@ -45,7 +48,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
         public async Task DeleteAsync(User user)
         {
-            user.IsActive = false;
+            user.IsActive = false; 
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
@@ -54,5 +57,5 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         {
             await _context.SaveChangesAsync();
         }
-}
+    }
 }

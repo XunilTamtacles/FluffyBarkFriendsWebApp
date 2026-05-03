@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FluffyBarkFriendsWebApp.Models.Database;
+using FluffyBarkFriendsWebApp.Views.Repositories.Interface;
 
 namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 {
-    public class PetRepository
+    public class PetRepository : IPetRepository
     {
         private readonly FluffyBarkFriendsWebAppContext _context;
 
@@ -11,49 +12,37 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         {
             _context = context;
         }
+
         public async Task<List<Pet>> GetAllAsync()
         {
-            var pets = await _context.Pets.ToListAsync();
-
-            return pets
+            return await _context.Pets
                 .Where(p => p.IsActive)
                 .OrderBy(p => p.PetName)
-                .ToList();
+                .ToListAsync();
         }
 
         public async Task<Pet?> GetByIdAsync(int id)
         {
-            var pet = await _context.Pets.FindAsync(id);
-
-            if (pet == null || !pet.IsActive)
-                return null;
-
-            return pet;
+            return await _context.Pets
+                .FirstOrDefaultAsync(p => p.PetId == id && p.IsActive);
         }
 
         public async Task<List<Pet>> SearchAsync(string searchTerm)
         {
-            var pets = await _context.Pets.ToListAsync();
+            var query = _context.Pets.Where(p => p.IsActive);
 
-            if (string.IsNullOrWhiteSpace(searchTerm))
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                return pets
-                    .Where(p => p.IsActive)
-                    .OrderBy(p => p.PetName)
-                    .ToList();
+                query = query.Where(p =>
+                    p.PetName.Contains(searchTerm) ||
+                    p.Species.Contains(searchTerm) ||
+                    (p.Breed != null && p.Breed.Contains(searchTerm))
+                );
             }
 
-            return pets
-                .Where(p =>
-                    p.IsActive &&
-                    (
-                        p.PetName.Contains(searchTerm) ||
-                        p.Species.Contains(searchTerm) ||
-                        p.Breed != null && p.Breed.Contains(searchTerm)
-                    )
-                )
+            return await query
                 .OrderBy(p => p.PetName)
-                .ToList();
+                .ToListAsync();
         }
 
         public async Task AddAsync(Pet pet)
@@ -70,10 +59,14 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
         public async Task DeleteAsync(Pet pet)
         {
-            pet.IsActive = false;
+            pet.IsActive = false; 
             _context.Pets.Update(pet);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SaveAsync()
+        {
             await _context.SaveChangesAsync();
         }
     }
 }
-

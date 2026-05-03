@@ -5,7 +5,7 @@ namespace FluffyBarkFriendsWebApp.Models.Database;
 
 public partial class MedicalHistory
 {
-    public int MedicalHistory1 { get; set; }
+    public int MedicalHistoryId { get; set; }
 
     public int PetId { get; set; }
 

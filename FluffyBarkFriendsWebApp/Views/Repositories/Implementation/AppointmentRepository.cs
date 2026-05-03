@@ -1,12 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FluffyBarkFriendsWebApp.Models.Database;
-
-using Microsoft.EntityFrameworkCore;
-using FluffyBarkFriendsWebApp.Models.Database;
+using FluffyBarkFriendsWebApp.Views.Repositories.Interface;
 
 namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 {
-    public class AppointmentRepository
+    public class AppointmentRepository : IAppointmentRepository
     {
         private readonly FluffyBarkFriendsWebAppContext _context;
 
@@ -17,74 +15,51 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
         public async Task<List<Appointment>> GetAllAsync()
         {
-            var result = await _context.Appointments
+            return await _context.Appointments
                 .Include(x => x.Pet)
                 .Include(x => x.CreatedByUser)
                 .Where(x => !x.IsDeleted)
-                .ToListAsync();
-
-            return result
                 .OrderByDescending(x => x.AppointmentDate)
                 .ThenBy(x => x.AppointmentTime)
-                .ToList();
+                .ToListAsync();
         }
 
         public async Task<Appointment?> GetByIdAsync(int id)
         {
-            var appointment = await _context.Appointments
+            return await _context.Appointments
                 .Include(x => x.Pet)
                 .Include(x => x.CreatedByUser)
-                .FirstOrDefaultAsync(x => x.AppointmentId == id);
-
-            if (appointment == null)
-                return null;
-
-            if (appointment.IsDeleted)
-                return null;
-
-            return appointment;
+                .FirstOrDefaultAsync(x => x.AppointmentId == id && !x.IsDeleted);
         }
 
         public async Task<List<Appointment>> GetByPetIdAsync(int petId)
         {
-            var list = await _context.Appointments
+            return await _context.Appointments
                 .Include(x => x.Pet)
                 .Include(x => x.CreatedByUser)
-                .Where(x => x.PetId == petId)
-                .ToListAsync();
-
-            return list
-                .Where(x => !x.IsDeleted)
+                .Where(x => x.PetId == petId && !x.IsDeleted)
                 .OrderByDescending(x => x.AppointmentDate)
-                .ToList();
+                .ToListAsync();
         }
 
         public async Task<List<Appointment>> GetByDateAsync(DateOnly date)
         {
-            var list = await _context.Appointments
+            return await _context.Appointments
                 .Include(x => x.Pet)
                 .Include(x => x.CreatedByUser)
-                .Where(x => x.AppointmentDate == date)
-                .ToListAsync();
-
-            return list
-                .Where(x => !x.IsDeleted)
+                .Where(x => x.AppointmentDate == date && !x.IsDeleted)
                 .OrderBy(x => x.AppointmentTime)
-                .ToList();
+                .ToListAsync();
         }
 
         public async Task<List<Appointment>> GetByStatusAsync(string status)
         {
-            var list = await _context.Appointments
+            return await _context.Appointments
                 .Include(x => x.Pet)
                 .Include(x => x.CreatedByUser)
-                .Where(x => x.Status == status)
-                .ToListAsync();
-
-            return list
-                .Where(x => !x.IsDeleted)
+                .Where(x => x.Status == status && !x.IsDeleted)
                 .OrderByDescending(x => x.AppointmentDate)
-                .ToList();
+                .ToListAsync();
         }
 
         public async Task AddAsync(Appointment appointment)
@@ -101,10 +76,30 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
         public async Task DeleteAsync(Appointment appointment)
         {
-            appointment.IsDeleted = true;
+            appointment.IsDeleted = true; 
             _context.Appointments.Update(appointment);
             await _context.SaveChangesAsync();
         }
+
+        
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+        public Task<List<Appointment>> GetIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IAppointmentRepository.UpdateAsync(Appointment appointment)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Delete(Appointment appointment)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
-   
