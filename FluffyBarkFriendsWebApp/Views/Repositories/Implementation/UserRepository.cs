@@ -31,7 +31,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         public Task<User?> GetByUsernameAsync(string username)
         {
             return _context.Users
-                .FirstOrDefaultAsync(x => x.Username == username && x.IsActive);
+                .FirstOrDefaultAsync(x => x.UserName == username && x.IsActive);
         }
 
         public async Task AddAsync(User user)

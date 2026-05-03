@@ -11,8 +11,8 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Interface
         Task<List<MedicalHistory>> GetByDateRangeAsync(DateOnly start, DateOnly end);
         Task<List<MedicalHistory>> GetRecentCasesAsync();
         Task AddAsync(MedicalHistory medicalHistory);
-        void Update(MedicalHistory medicalHistory);
-        void Delete(MedicalHistory medicalHistory);
+        Task UpdateAsync(MedicalHistory medicalHistory);
+        Task DeleteAsync(MedicalHistory medicalHistory);
         Task SaveAsync();
     }
 }
