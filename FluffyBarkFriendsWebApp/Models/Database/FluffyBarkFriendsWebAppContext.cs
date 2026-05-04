@@ -79,11 +79,11 @@ public partial class FluffyBarkFriendsWebAppContext : DbContext
 
         modelBuilder.Entity<MedicalHistory>(entity =>
         {
-            entity.HasKey(e => e.MedicalHistory1);
+            entity.HasKey(e => e.MedicalHistoryId);
 
             entity.ToTable("MedicalHistory");
 
-            entity.Property(e => e.MedicalHistory1).HasColumnName("MedicalHistory");
+            entity.Property(e => e.MedicalHistoryId).HasColumnName("MedicalHistory");
             entity.Property(e => e.Condition)
                 .HasMaxLength(100)
                 .IsUnicode(false);

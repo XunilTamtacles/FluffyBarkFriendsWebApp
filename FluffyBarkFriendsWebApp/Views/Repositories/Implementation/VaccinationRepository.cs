@@ -24,6 +24,15 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
                 .ToListAsync();
         }
 
+        public async Task<Vaccination?> GetByIdAsync(int id)
+        {
+            return await _context.Vaccinations
+                .Include(v => v.Pet)
+                .Include(v => v.Appointment)
+                .Include(v => v.RecordedByUser)
+                .FirstOrDefaultAsync(v => v.VaccinationId == id && !v.IsDeleted);
+        }
+
         public async Task<List<Vaccination>> GetByPetIdAsync(int petId)
         {
             return await _context.Vaccinations
@@ -34,7 +43,16 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
                 .ToListAsync();
         }
 
-        
+        public async Task<List<Vaccination>> GetByAppointmentIdAsync(int appointmentId)
+        {
+            return await _context.Vaccinations
+                .Include(v => v.Pet)
+                .Include(v => v.RecordedByUser)
+                .Where(v => v.AppointmentId == appointmentId && !v.IsDeleted)
+                .OrderByDescending(v => v.DateGiven)
+                .ToListAsync();
+        }
+
         public async Task<List<Vaccination>> GetUpcomingAsync()
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
@@ -44,6 +62,19 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
                 .Where(v => !v.IsDeleted &&
                             v.NextDueDate != null &&
                             v.NextDueDate >= today)
+                .OrderBy(v => v.NextDueDate)
+                .ToListAsync();
+        }
+
+        public async Task<List<Vaccination>> GetOverdueAsync()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            return await _context.Vaccinations
+                .Include(v => v.Pet)
+                .Where(v => !v.IsDeleted &&
+                            v.NextDueDate != null &&
+                            v.NextDueDate < today)
                 .OrderBy(v => v.NextDueDate)
                 .ToListAsync();
         }
@@ -62,7 +93,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
         public async Task DeleteAsync(Vaccination vaccination)
         {
-            vaccination.IsDeleted = true;
+            vaccination.IsDeleted = true; 
             _context.Vaccinations.Update(vaccination);
             await _context.SaveChangesAsync();
         }
@@ -70,21 +101,6 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
-        }
-
-        Task<Vaccination?> IVaccinationRepository.GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<Vaccination>> IVaccinationRepository.GetByAppointmentIdAsync(int appointmentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<List<Vaccination>> IVaccinationRepository.GetOverdueAsync()
-        {
-            throw new NotImplementedException();
         }
     }
 }

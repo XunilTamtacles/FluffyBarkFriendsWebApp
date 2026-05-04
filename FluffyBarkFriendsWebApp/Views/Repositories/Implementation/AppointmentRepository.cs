@@ -87,19 +87,5 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public Task<List<Appointment>> GetIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IAppointmentRepository.UpdateAsync(Appointment appointment)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(Appointment appointment)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
