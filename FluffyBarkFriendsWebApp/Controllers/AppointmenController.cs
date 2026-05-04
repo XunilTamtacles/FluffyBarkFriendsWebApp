@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Views.Repositories.Interface;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
-using FluffyBarkFriendsWebApp.Views.Services.Interface;
 
 namespace FluffyBarkFriendsWebApp.Controllers
 {
