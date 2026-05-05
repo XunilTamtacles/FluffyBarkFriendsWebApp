@@ -1,6 +1,6 @@
 ﻿namespace FluffyBarkFriendsWebApp.Views.Service.Implementation
 {
-    public class AppointmentServiced
+    public class AppointmentService
     {
 
     }
