@@ -1,0 +1,89 @@
+﻿@using FluffyBarkFriendsWebApp.Models.ViewModels
+
+@model DashBoardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Clinic Overview</span>
+    <h1>Dashboard</h1>
+    <p>Quick summary of pets, appointments, medical records, and vaccination schedules.</p>
+</section>
+
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Active Pets</span>
+                <h2 class="h4 mb-0">@Model.ActivePetsCount</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Today Appointments</span>
+                <h2 class="h4 mb-0">@Model.TodayAppointmentsCount</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Upcoming Vaccinations</span>
+                <h2 class="h4 mb-0">@Model.UpcomingVaccinationsCount</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Recent Medical Cases</span>
+                <h2 class="h4 mb-0">@Model.RecentMedicalCasesCount</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-2">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Pending</span>
+                <h2 class="h5 mb-0">@Model.PendingAppointmentsCount</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Confirmed</span>
+                <h2 class="h5 mb-0">@Model.ConfirmedAppointmentsCount</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Completed</span>
+                <h2 class="h5 mb-0">@Model.CompletedAppointmentsCount</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <span class="text-muted small">Cancelled</span>
+                <h2 class="h5 mb-0">@Model.CancelledAppointmentsCount</h2>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@using FluffyBarkFriendsWebApp.Models.ViewModels
+@model LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<section class="auth-panel">
+    <div class="auth-copy">
+        <span class="eyebrow">Welcome back</span>
+        <h1>Login to Fluffy Bark Friends</h1>
+        <p>Access appointments, pet records, medical history, and vaccination tools in the clinic system.</p>
+    </div>
+
+    <form asp-action="Login" method="post" class="auth-form">
+        <input asp-for="ReturnUrl" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="Username" class="form-label"></label>
+            <input asp-for="Username" class="form-control" autocomplete="username" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" class="form-control" autocomplete="current-password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+        <p class="auth-switch">No account yet? <a asp-action="Register">Register here</a>.</p>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
