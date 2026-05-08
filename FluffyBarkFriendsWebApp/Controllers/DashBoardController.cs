@@ -59,6 +59,10 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
                 OverdueVaccinations = overdueVaccinations
                     .Take(6)
+                    .ToList(),
+
+                RecentMedicalCases = recentMedicalCases
+                    .Take(6)
                     .ToList()
             };
 

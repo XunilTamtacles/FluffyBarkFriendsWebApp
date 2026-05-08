@@ -37,5 +37,7 @@ namespace FluffyBarkFriendsWebApp.Models.ViewModels
         public List<Vaccination> UpcomingVaccinations { get; set; } = new List<Vaccination>();
 
         public List<Vaccination> OverdueVaccinations { get; set; } = new List<Vaccination>();
+
+        public List<MedicalHistory> RecentMedicalCases { get; set; } = new List<MedicalHistory>();
     }
 }

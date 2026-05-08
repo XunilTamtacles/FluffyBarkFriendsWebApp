@@ -1,8 +1,111 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="clinic-home">
+    <div class="p-4 p-md-5 mb-4 rounded-4 shadow-sm clinic-hero">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <p class="text-uppercase small fw-semibold text-success mb-2">Veterinary Clinic System</p>
+                <h1 class="display-6 fw-bold mb-3">Fluffy Bark Friends</h1>
+                <p class="lead mb-4">
+                    A clean and friendly system for managing appointments, pet profiles,
+                    medical history, and vaccination records.
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a asp-controller="DashBoard" asp-action="Index" class="btn btn-success rounded-pill px-4">
+                        Dashboard
+                    </a>
+
+                    <a asp-controller="Appointment" asp-action="Index" class="btn btn-outline-success rounded-pill px-4">
+                        Appointments
+                    </a>
+
+                    <a asp-controller="Pet" asp-action="Index" class="btn btn-outline-success rounded-pill px-4">
+                        Pets
+                    </a>
+
+                    <a asp-controller="Vaccination" asp-action="Index" class="btn btn-outline-success rounded-pill px-4">
+                        Vaccinations
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="bg-white rounded-4 p-4 shadow-sm">
+                    <h2 class="h5 fw-bold mb-3">Today at a Glance</h2>
+
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="clinic-stat rounded-4 p-3">
+                                <span class="text-muted small">Appointments</span>
+                                <strong class="d-block fs-4">0</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="clinic-stat rounded-4 p-3">
+                                <span class="text-muted small">Pets</span>
+                                <strong class="d-block fs-4">0</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="clinic-stat rounded-4 p-3">
+                                <span class="text-muted small">Records</span>
+                                <strong class="d-block fs-4">0</strong>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div class="clinic-stat rounded-4 p-3">
+                                <span class="text-muted small">Vaccines</span>
+                                <strong class="d-block fs-4">0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mt-3 mb-0">
+                        Dashboard counts can be connected later using your service layer.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold">Comfortable Care</h2>
+                    <p class="text-muted mb-0">
+                        The system helps clinic staff organize daily tasks while keeping pet care friendly and simple.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold">Easy Records</h2>
+                    <p class="text-muted mb-0">
+                        Pet records, appointments, vaccinations, and medical history can be managed in one place.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body">
+                    <h2 class="h5 fw-bold">Trusted System</h2>
+                    <p class="text-muted mb-0">
+                        Clean forms and organized tables help make clinic information easier to view and update.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
