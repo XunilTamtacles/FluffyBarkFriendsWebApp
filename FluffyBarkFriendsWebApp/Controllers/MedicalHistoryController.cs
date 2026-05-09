@@ -1,10 +1,12 @@
-﻿using FluffyBarkFriendsWebApp.Models.Database;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FluffyBarkFriendsWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,Staff,Client")]
     public class MedicalHistoryController : Controller
     {
         private readonly IMedicalHistoryService _medicalHistoryService;
@@ -32,19 +34,19 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(history);
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
-            var model = new MedicalHistoryFormsViewModel
+            return View(new MedicalHistoryFormsViewModel
             {
                 VisitDate = DateOnly.FromDateTime(DateTime.Today),
                 VisitTime = TimeOnly.FromDateTime(DateTime.Now)
-            };
-
-            return View(model);
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(MedicalHistoryFormsViewModel model)
         {
             if (!ModelState.IsValid)
@@ -57,6 +59,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             try
             {
                 await _medicalHistoryService.CreateAsync(history);
+                TempData["SuccessMessage"] = "Medical history added successfully.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -66,6 +69,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id)
         {
             var history = await _medicalHistoryService.GetByIdAsync(id);
@@ -81,16 +85,10 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id, MedicalHistoryFormsViewModel model)
         {
             if (id != model.MedicalHistoryId)
-            {
-                return NotFound();
-            }
-
-            var existingHistory = await _medicalHistoryService.GetByIdAsync(id);
-
-            if (existingHistory == null)
             {
                 return NotFound();
             }
@@ -100,11 +98,28 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return View(model);
             }
 
-            var history = MapToMedicalHistory(model);
+            var existingHistory = await _medicalHistoryService.GetByIdAsync(id);
+
+            if (existingHistory == null)
+            {
+                return NotFound();
+            }
+
+            existingHistory.PetId = model.PetId;
+            existingHistory.VisitDate = model.VisitDate;
+            existingHistory.VisitTime = model.VisitTime;
+            existingHistory.Condition = model.Condition ?? string.Empty;
+            existingHistory.Diagnosis = model.Diagnosis ?? string.Empty;
+            existingHistory.Treatment = model.Treatment ?? string.Empty;
+            existingHistory.Dosage = model.Dosage ?? string.Empty;
+            existingHistory.Notes = model.Notes ?? string.Empty;
+            existingHistory.Medication = model.Medication ?? string.Empty;
+            existingHistory.CreatedByUserId = model.CreatedByUserId;
 
             try
             {
-                await _medicalHistoryService.UpdateAsync(history);
+                await _medicalHistoryService.UpdateAsync(existingHistory);
+                TempData["SuccessMessage"] = "Medical history updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -114,6 +129,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var history = await _medicalHistoryService.GetByIdAsync(id);
@@ -128,6 +144,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var history = await _medicalHistoryService.GetByIdAsync(id);
@@ -138,6 +155,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
 
             await _medicalHistoryService.DeleteAsync(id);
+            TempData["SuccessMessage"] = "Medical history deleted successfully.";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -155,7 +174,9 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 Dosage = model.Dosage ?? string.Empty,
                 Notes = model.Notes ?? string.Empty,
                 Medication = model.Medication ?? string.Empty,
-                CreatedByUserId = model.CreatedByUserId
+                CreatedByUserId = model.CreatedByUserId,
+                CreatedAt = DateTime.Now,
+                IsDeleted = false
             };
         }
 

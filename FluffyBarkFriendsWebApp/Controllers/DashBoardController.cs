@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
 
 namespace FluffyBarkFriendsWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,Staff")]
     public class DashBoardController : Controller
     {
         private readonly IPetService _petService;

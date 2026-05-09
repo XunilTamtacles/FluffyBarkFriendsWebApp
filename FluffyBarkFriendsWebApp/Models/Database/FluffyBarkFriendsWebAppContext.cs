@@ -83,28 +83,46 @@ public partial class FluffyBarkFriendsWebAppContext : DbContext
 
             entity.ToTable("MedicalHistory");
 
-            entity.Property(e => e.MedicalHistoryId).HasColumnName("MedicalHistory");
+            entity.Property(e => e.MedicalHistoryId)
+                .HasColumnName("MedicalHistory");
+
             entity.Property(e => e.Condition)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+
             entity.Property(e => e.Diagnosis)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Dosage)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Medication)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Notes)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
             entity.Property(e => e.Treatment)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
+            entity.HasOne(e => e.Pet)
+                .WithMany()
+                .HasForeignKey(e => e.PetId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(e => e.RecordedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
         });
 
         modelBuilder.Entity<Pet>(entity =>

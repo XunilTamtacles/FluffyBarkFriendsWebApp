@@ -1,0 +1,44 @@
+﻿@model FluffyBarkFriendsWebApp.Models.Database.MedicalHistory
+
+@{
+    ViewData["Title"] = "Delete Medical Record";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Medical History</span>
+    <h1>Delete Medical Record</h1>
+    <p>Please confirm before removing this record.</p>
+</section>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <div class="alert alert-danger rounded-4">
+            Are you sure you want to delete this medical record?
+        </div>
+
+        <dl class="row">
+            <dt class="col-sm-3">Pet</dt>
+            <dd class="col-sm-9">@Model.Pet?.PetName</dd>
+
+            <dt class="col-sm-3">Condition</dt>
+            <dd class="col-sm-9">@Model.Condition</dd>
+
+            <dt class="col-sm-3">Diagnosis</dt>
+            <dd class="col-sm-9">@Model.Diagnosis</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+
+            <input asp-for="MedicalHistoryId" type="hidden" />
+
+            <button type="submit" class="btn btn-danger rounded-pill px-4">
+                Delete
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>

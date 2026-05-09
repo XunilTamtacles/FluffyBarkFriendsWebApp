@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
 
 namespace FluffyBarkFriendsWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,Staff,Client")]
     public class VaccinationController : Controller
     {
         private readonly IVaccinationService _vaccinationService;
@@ -13,6 +15,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _vaccinationService = vaccinationService;
         }
 
+
         public async Task<IActionResult> Index()
         {
             var vaccinations = await _vaccinationService.GetAllAsync();
@@ -20,7 +23,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(vaccinations);
         }
 
-     
+       
+
         public async Task<IActionResult> Details(int id)
         {
             var vaccination = await _vaccinationService.GetByIdAsync(id);
@@ -33,14 +37,23 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(vaccination);
         }
 
+     
+
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
-            return View();
+            var vaccination = new Vaccination
+            {
+                DateGiven = DateOnly.FromDateTime(DateTime.Today),
+                NextDueDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(1))
+            };
+
+            return View(vaccination);
         }
 
-     
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(Vaccination vaccination)
         {
             if (!ModelState.IsValid)
@@ -51,18 +64,32 @@ namespace FluffyBarkFriendsWebApp.Controllers
             if (vaccination.NextDueDate.HasValue &&
                 vaccination.NextDueDate.Value < vaccination.DateGiven)
             {
-                ModelState.AddModelError("NextDueDate",
+                ModelState.AddModelError(
+                    "NextDueDate",
                     "Next due date cannot be earlier than date given.");
 
                 return View(vaccination);
             }
 
-            await _vaccinationService.CreateAsync(vaccination);
+            try
+            {
+                await _vaccinationService.CreateAsync(vaccination);
 
-            return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "Vaccination record successfully added.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+
+                return View(vaccination);
+            }
         }
 
-       
+   
+
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id)
         {
             var vaccination = await _vaccinationService.GetByIdAsync(id);
@@ -75,14 +102,14 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(vaccination);
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id, Vaccination vaccination)
         {
             if (id != vaccination.VaccinationId)
             {
-                return BadRequest();
+                return NotFound();
             }
 
             if (!ModelState.IsValid)
@@ -93,18 +120,48 @@ namespace FluffyBarkFriendsWebApp.Controllers
             if (vaccination.NextDueDate.HasValue &&
                 vaccination.NextDueDate.Value < vaccination.DateGiven)
             {
-                ModelState.AddModelError("NextDueDate",
+                ModelState.AddModelError(
+                    "NextDueDate",
                     "Next due date cannot be earlier than date given.");
 
                 return View(vaccination);
             }
 
-            await _vaccinationService.UpdateAsync(vaccination);
+            var existingVaccination = await _vaccinationService.GetByIdAsync(id);
 
-            return RedirectToAction(nameof(Index));
+            if (existingVaccination == null)
+            {
+                return NotFound();
+            }
+
+            existingVaccination.PetId = vaccination.PetId;
+            existingVaccination.AppointmentId = vaccination.AppointmentId;
+            existingVaccination.VaccineName = vaccination.VaccineName;
+            existingVaccination.DateGiven = vaccination.DateGiven;
+            existingVaccination.NextDueDate = vaccination.NextDueDate;
+            existingVaccination.Dose = vaccination.Dose;
+            existingVaccination.Remarks = vaccination.Remarks;
+            existingVaccination.RecordedByUserId = vaccination.RecordedByUserId;
+
+            try
+            {
+                await _vaccinationService.UpdateAsync(existingVaccination);
+
+                TempData["SuccessMessage"] = "Vaccination record successfully updated.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+
+                return View(vaccination);
+            }
         }
 
-       
+   
+
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var vaccination = await _vaccinationService.GetByIdAsync(id);
@@ -117,12 +174,21 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(vaccination);
         }
 
-       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var vaccination = await _vaccinationService.GetByIdAsync(id);
+
+            if (vaccination == null)
+            {
+                return NotFound();
+            }
+
             await _vaccinationService.DeleteAsync(id);
+
+            TempData["SuccessMessage"] = "Vaccination record successfully deleted.";
 
             return RedirectToAction(nameof(Index));
         }

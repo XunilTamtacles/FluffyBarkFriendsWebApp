@@ -1,0 +1,87 @@
+﻿@model List<FluffyBarkFriendsWebApp.Models.Database.MedicalHistory>
+
+@{
+    ViewData["Title"] = "Medical History";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Clinic Records</span>
+    <h1>Medical History</h1>
+    <p>Manage pet medical records and visit history.</p>
+</section>
+
+<div class="mb-3">
+    <a asp-action="Create"
+       class="btn btn-success rounded-pill px-4">
+        Add Medical Record
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+
+        @if (Model.Any())
+        {
+            <table class="table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>Pet</th>
+                        <th>Visit Date</th>
+                        <th>Condition</th>
+                        <th>Diagnosis</th>
+                        <th>Treatment</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>@item.Pet?.PetName</td>
+                            <td>@item.VisitDate</td>
+                            <td>@item.Condition</td>
+                            <td>@item.Diagnosis</td>
+                            <td>@item.Treatment</td>
+
+                            <td class="text-end">
+
+                                <a asp-action="Details"
+                                   asp-route-id="@item.MedicalHistoryId"
+                                   class="btn btn-sm btn-outline-success">
+                                    Details
+                                </a>
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.MedicalHistoryId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    Edit
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@item.MedicalHistoryId"
+                                   class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+        else
+        {
+            <p class="text-muted mb-0">
+                No medical records found.
+            </p>
+        }
+
+    </div>
+</div>

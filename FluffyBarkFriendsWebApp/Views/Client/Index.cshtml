@@ -1,0 +1,177 @@
+﻿@model FluffyBarkFriendsWebApp.Models.ViewModels.ClientPortalViewModel
+
+@{
+    ViewData["Title"] = "My Portal";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Client Portal</span>
+
+    <h1>Welcome to Your Pet Portal</h1>
+
+    <p class="lead text-muted">
+        View your pet information, appointments, medical history, and vaccination records.
+    </p>
+
+    <div class="mt-4 d-flex gap-2 flex-wrap">
+        <a asp-controller="Appointment"
+           asp-action="Book"
+           class="btn btn-success">
+            📅 Book Appointment
+        </a>
+
+        <a asp-controller="Pet"
+           asp-action="Index"
+           class="btn btn-outline-success">
+            🐾 My Pets
+        </a>
+
+        <a asp-controller="MedicalHistory"
+           asp-action="Index"
+           class="btn btn-outline-success">
+            📋 Medical History
+        </a>
+
+        <a asp-controller="Vaccination"
+           asp-action="Index"
+           class="btn btn-outline-success">
+            💉 Vaccinations
+        </a>
+    </div>
+</section>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="portal-stat-card">
+            <div class="portal-icon">🐾</div>
+            <span>Pets</span>
+            <h2>@Model.PetsCount</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="portal-stat-card">
+            <div class="portal-icon">📅</div>
+            <span>Appointments</span>
+            <h2>@Model.AppointmentsCount</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="portal-stat-card">
+            <div class="portal-icon">📋</div>
+            <span>Medical History</span>
+            <h2>@Model.MedicalHistoryCount</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="portal-stat-card">
+            <div class="portal-icon">💉</div>
+            <span>Vaccinations</span>
+            <h2>@Model.VaccinationsCount</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h3 class="fw-bold mb-3">📅 Recent Appointments</h3>
+
+                @if (Model.Appointments.Any())
+                {
+                    <ul class="portal-list">
+                        @foreach (var item in Model.Appointments)
+                        {
+                            <li>
+                                <strong>@item.AppointmentDate</strong>
+                                <span>@item.AppointmentTime - @item.Status</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No appointments found.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h3 class="fw-bold mb-3">🐾 My Pets</h3>
+
+                @if (Model.Pets.Any())
+                {
+                    <ul class="portal-list">
+                        @foreach (var item in Model.Pets)
+                        {
+                            <li>
+                                <strong>@item.PetName</strong>
+                                <span>@item.Species - @item.Breed</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No pet records found.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h3 class="fw-bold mb-3">📋 Medical History</h3>
+
+                @if (Model.MedicalHistories.Any())
+                {
+                    <ul class="portal-list">
+                        @foreach (var item in Model.MedicalHistories)
+                        {
+                            <li>
+                                <strong>@item.VisitDate</strong>
+                                <span>@item.Condition - @item.Diagnosis</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No medical history found.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-body p-4">
+                <h3 class="fw-bold mb-3">💉 Vaccinations</h3>
+
+                @if (Model.Vaccinations.Any())
+                {
+                    <ul class="portal-list">
+                        @foreach (var item in Model.Vaccinations)
+                        {
+                            <li>
+                                <strong>@item.VaccineName</strong>
+                                <span>Date Given: @item.DateGiven</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No vaccination records found.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

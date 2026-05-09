@@ -1,0 +1,40 @@
+﻿@using FluffyBarkFriendsWebApp.Models.ViewModels
+@model VaccinationRecordFormsViewModel
+
+@{
+    ViewData["Title"] = "Edit Vaccination";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Vaccination Records</span>
+    <h1>Edit Vaccination Record</h1>
+    <p>Update vaccine information and due date schedule.</p>
+</section>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            <input asp-for="VaccinationId" type="hidden" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <partial name="_Form" model="Model" />
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success rounded-pill px-4">
+                    Update Vaccination
+                </button>
+
+                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                    Back
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

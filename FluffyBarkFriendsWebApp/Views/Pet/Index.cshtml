@@ -1,0 +1,131 @@
+﻿@model IEnumerable<FluffyBarkFriendsWebApp.Models.Database.Pet>
+
+@{
+    ViewData["Title"] = "Pet";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Pet Management</span>
+    <h1>Pets</h1>
+    <p>Manage registered pets and clinic records.</p>
+</section>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <form asp-action="Index" method="get" class="d-flex gap-2">
+        <input type="text"
+               name="searchTerm"
+               class="form-control rounded-pill"
+               placeholder="Search pet name, species, or breed..." />
+
+        <button type="submit" class="btn btn-outline-success rounded-pill px-4">
+            Search
+        </button>
+    </form>
+
+    <a asp-action="Create" class="btn btn-success rounded-pill px-4">
+        + Add Pet
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Pet</th>
+                            <th>Species</th>
+                            <th>Breed</th>
+                            <th>Sex</th>
+                            <th>Age</th>
+                            <th>Weight</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"
+                                             style="width:48px;height:48px;font-size:20px;">
+                                            🐾
+                                        </div>
+
+                                        <div>
+                                            <div class="fw-semibold">
+                                                @item.PetName
+                                            </div>
+
+                                            <small class="text-muted">
+                                                @item.Color
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>@item.Species</td>
+                                <td>@item.Breed</td>
+                                <td>@item.Sex</td>
+                                <td>@item.AgeYears</td>
+                                <td>@item.Weight kg</td>
+
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge rounded-pill bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-secondary">Inactive</span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.PetId"
+                                       class="btn btn-sm btn-outline-success rounded-pill">
+                                        Details
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.PetId"
+                                       class="btn btn-sm btn-outline-primary rounded-pill">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.PetId"
+                                       class="btn btn-sm btn-outline-danger rounded-pill">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div style="font-size:70px;">🐶</div>
+
+                <h3 class="h5 mt-3">No pets found</h3>
+
+                <p class="text-muted">
+                    Start by registering your first pet.
+                </p>
+
+                <a asp-action="Create" class="btn btn-success rounded-pill px-4">
+                    Add Pet
+                </a>
+            </div>
+        }
+    </div>
+</div>

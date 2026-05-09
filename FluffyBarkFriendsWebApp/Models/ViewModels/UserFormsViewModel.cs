@@ -11,9 +11,9 @@ namespace FluffyBarkFriendsWebApp.Models.ViewModels
         [Display(Name = "Full Name")]
         public string FullName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Username is required.")]
+        [Required(ErrorMessage = "UserName is required.")]
         [StringLength(30)]
-        [Display(Name = "Username")]
+        [Display(Name = "UserName")]
         public string UserName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required.")]

@@ -1,0 +1,64 @@
+﻿@model FluffyBarkFriendsWebApp.Models.Database.Vaccination
+
+@{
+    ViewData["Title"] = "Vaccination Details";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Vaccination Records</span>
+    <h1>Vaccination Details</h1>
+    <p>Complete information about this pet vaccination record.</p>
+</section>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="clinic-stat rounded-4 p-3">
+                    <span class="text-muted small">Pet</span>
+                    <h3 class="h5 mb-0">@Model.Pet?.PetName</h3>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="clinic-stat rounded-4 p-3">
+                    <span class="text-muted small">Vaccine</span>
+                    <h3 class="h5 mb-0">@Model.VaccineName</h3>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="clinic-stat rounded-4 p-3">
+                    <span class="text-muted small">Next Due</span>
+                    <h3 class="h5 mb-0">@Model.NextDueDate</h3>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <dl class="row">
+            <dt class="col-sm-3">Dose</dt>
+            <dd class="col-sm-9">@Model.Dose</dd>
+
+            <dt class="col-sm-3">Date Given</dt>
+            <dd class="col-sm-9">@Model.DateGiven</dd>
+
+            <dt class="col-sm-3">Remarks</dt>
+            <dd class="col-sm-9">@Model.Remarks</dd>
+
+            <dt class="col-sm-3">Recorded By</dt>
+            <dd class="col-sm-9">@Model.RecordedByUser?.FullName</dd>
+        </dl>
+
+        <div class="mt-4 d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.VaccinationId" class="btn btn-success rounded-pill px-4">
+                Edit
+            </a>
+
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                Back
+            </a>
+        </div>
+    </div>
+</div>

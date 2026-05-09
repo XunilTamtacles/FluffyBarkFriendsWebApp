@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Appointment Confirmation";
+}
+
+<section class="page-panel text-center">
+
+    <div class="mb-4" style="font-size: 80px;">
+        🐾
+    </div>
+
+    <span class="eyebrow">
+        Appointment Submitted
+    </span>
+
+    <h1 class="mt-2 fw-bold">
+        Appointment Confirmed
+    </h1>
+
+    <p class="text-muted mt-3">
+        Your appointment request has been successfully submitted.
+        Please wait for the clinic staff to review and confirm your schedule.
+    </p>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-6">
+
+            <div class="clinic-stat rounded-4 p-4">
+
+                <h5 class="fw-semibold mb-3">
+                    What happens next?
+                </h5>
+
+                <div class="text-start">
+
+                    <p class="mb-2">
+                        ✅ Your appointment is now marked as
+                        <strong>Pending</strong>.
+                    </p>
+
+                    <p class="mb-2">
+                        📅 Clinic staff will review your selected schedule.
+                    </p>
+
+                    <p class="mb-2">
+                        📞 Please wait for clinic confirmation or contact.
+                    </p>
+
+                    <p class="mb-0">
+                        🐶 Bring your pet vaccination or medical records during the visit.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex justify-content-center gap-2">
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-success rounded-pill px-4">
+
+            Back To Home
+
+        </a>
+
+        <a asp-controller="Appointment"
+           asp-action="Index"
+           class="btn btn-outline-success rounded-pill px-4">
+
+            View Appointments
+
+        </a>
+
+    </div>
+
+</section>

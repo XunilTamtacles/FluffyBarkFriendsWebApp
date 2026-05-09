@@ -21,7 +21,7 @@ public partial class MedicalHistory
 
     public string? Dosage { get; set; }
 
-    public required string Notes { get; set; } 
+    public string? Notes { get; set; }
 
     public string? Medication { get; set; }
 
@@ -32,8 +32,6 @@ public partial class MedicalHistory
     public bool IsDeleted { get; set; }
 
     public virtual Pet Pet { get; set; } = null!;
-
-    public virtual Appointment? Appointment { get; set; }
 
     public virtual User RecordedByUser { get; set; } = null!;
 }

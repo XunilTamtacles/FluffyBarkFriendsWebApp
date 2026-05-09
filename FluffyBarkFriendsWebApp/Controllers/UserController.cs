@@ -1,11 +1,13 @@
 ﻿using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FluffyBarkFriendsWebApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -17,9 +19,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _passwordHasher = new PasswordHasher<User>();
         }
 
+
         public async Task<IActionResult> Index()
         {
             var users = await _userService.GetAllAsync();
+
             return View(users);
         }
 
@@ -49,17 +53,29 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return View(model);
             }
 
-            var user = MapToUser(model);
-            user.PasswordHash = _passwordHasher.HashPassword(user, model.PasswordHash);
+            var user = new User
+            {
+                FullName = model.FullName,
+                UserName = model.UserName,
+                Role = model.Role
+            };
+
+        
+            user.PasswordHash = _passwordHasher
+                .HashPassword(user, model.PasswordHash);
 
             try
             {
                 await _userService.CreateAsync(user);
+
+                TempData["Success"] = "User created successfully.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
         }
@@ -73,7 +89,14 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
-            var model = MapToUserFormsViewModel(user);
+            var model = new UserFormsViewModel
+            {
+                UserId = user.UserId,
+                FullName = user.FullName,
+                UserName = user.UserName,
+                Role = user.Role
+            };
+
             return View(model);
         }
 
@@ -86,6 +109,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var existingUser = await _userService.GetByIdAsync(id);
 
             if (existingUser == null)
@@ -93,25 +121,33 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            existingUser.FullName = model.FullName;
+            existingUser.UserName = model.UserName;
+            existingUser.Role = model.Role;
 
-            var user = MapToUser(model);
-            user.PasswordHash = _passwordHasher.HashPassword(user, model.PasswordHash);
+           
+            if (!string.IsNullOrWhiteSpace(model.PasswordHash))
+            {
+                existingUser.PasswordHash = _passwordHasher
+                    .HashPassword(existingUser, model.PasswordHash);
+            }
 
             try
             {
-                await _userService.UpdateAsync(user);
+                await _userService.UpdateAsync(existingUser);
+
+                TempData["Success"] = "User updated successfully.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
         }
+
 
         public async Task<IActionResult> Delete(int id)
         {
@@ -137,30 +173,10 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
 
             await _userService.DeleteAsync(id);
+
+            TempData["Success"] = "User deleted successfully.";
+
             return RedirectToAction(nameof(Index));
-        }
-
-        private static User MapToUser(UserFormsViewModel model)
-        {
-            return new User
-            {
-                UserId = model.UserId,
-                FullName = model.FullName,
-                UserName = model.UserName,
-                PasswordHash = model.PasswordHash,
-                Role = model.Role
-            };
-        }
-
-        private static UserFormsViewModel MapToUserFormsViewModel(User user)
-        {
-            return new UserFormsViewModel
-            {
-                UserId = user.UserId,
-                FullName = user.FullName,
-                UserName = user.UserName,
-                Role = user.Role
-            };
         }
     }
 }

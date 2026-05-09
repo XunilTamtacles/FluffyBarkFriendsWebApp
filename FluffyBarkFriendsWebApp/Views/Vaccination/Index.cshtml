@@ -1,0 +1,95 @@
+﻿@model List<FluffyBarkFriendsWebApp.Models.Database.Vaccination>
+
+@{
+    ViewData["Title"] = "Vaccinations";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Vaccination Records</span>
+    <h1>Vaccinations</h1>
+    <p>Monitor vaccines, next due dates, and pet vaccination history.</p>
+</section>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h5 mb-0">Vaccination List</h2>
+
+    <a asp-action="Create" class="btn btn-success rounded-pill px-4">
+        + Add Vaccination
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Pet</th>
+                            <th>Vaccine</th>
+                            <th>Dose</th>
+                            <th>Date Given</th>
+                            <th>Next Due</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var today = DateOnly.FromDateTime(DateTime.Today);
+                            var isOverdue = item.NextDueDate.HasValue && item.NextDueDate.Value < today;
+                            var isUpcoming = item.NextDueDate.HasValue && item.NextDueDate.Value >= today;
+
+                            <tr>
+                                <td class="fw-semibold">@item.Pet?.PetName</td>
+                                <td>@item.VaccineName</td>
+                                <td>@item.Dose</td>
+                                <td>@item.DateGiven</td>
+                                <td>@item.NextDueDate</td>
+                                <td>
+                                    @if (isOverdue)
+                                    {
+                                        <span class="badge rounded-pill bg-danger">Overdue</span>
+                                    }
+                                    else if (isUpcoming)
+                                    {
+                                        <span class="badge rounded-pill bg-success">Upcoming</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-secondary">No Due Date</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@item.VaccinationId" class="btn btn-sm btn-outline-success rounded-pill">
+                                        Details
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@item.VaccinationId" class="btn btn-sm btn-outline-primary rounded-pill">
+                                        Edit
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.VaccinationId" class="btn btn-sm btn-outline-danger rounded-pill">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div style="font-size:60px;">💉</div>
+                <h3 class="h5 mt-3">No vaccination records found</h3>
+                <p class="text-muted">Start by adding vaccination information for a pet.</p>
+                <a asp-action="Create" class="btn btn-success rounded-pill px-4">
+                    Add Vaccination
+                </a>
+            </div>
+        }
+    </div>
+</div>

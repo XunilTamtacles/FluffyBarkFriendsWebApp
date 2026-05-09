@@ -1,10 +1,12 @@
 ﻿using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FluffyBarkFriendsWebApp.Controllers
 {
+    [Authorize(Roles = "Admin,Staff,Client")]
     public class PetController : Controller
     {
         private readonly IPetService _petService;
@@ -14,6 +16,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _petService = petService;
         }
 
+
+
         public async Task<IActionResult> Index(string? searchTerm)
         {
             var pets = string.IsNullOrWhiteSpace(searchTerm)
@@ -22,6 +26,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
             return View(pets);
         }
+
+
 
         public async Task<IActionResult> Details(int id)
         {
@@ -35,6 +41,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(pet);
         }
 
+
+        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             return View(new PetFormsViewModel());
@@ -42,6 +50,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(PetFormsViewModel model)
         {
             if (!ModelState.IsValid)
@@ -54,15 +63,21 @@ namespace FluffyBarkFriendsWebApp.Controllers
             try
             {
                 await _petService.CreateAsync(pet);
+
+                TempData["SuccessMessage"] = "Pet successfully added.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
         }
 
+
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -73,21 +88,16 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
 
             var model = MapToPetFormsViewModel(pet);
+
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id, PetFormsViewModel model)
         {
             if (id != model.PetId)
-            {
-                return NotFound();
-            }
-
-            var existingPet = await _petService.GetByIdAsync(id);
-
-            if (existingPet == null)
             {
                 return NotFound();
             }
@@ -97,20 +107,44 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return View(model);
             }
 
-            var pet = MapToPet(model);
+            var existingPet = await _petService.GetByIdAsync(id);
+
+            if (existingPet == null)
+            {
+                return NotFound();
+            }
+
+            existingPet.PetName = model.PetName;
+            existingPet.Species = model.Species;
+            existingPet.Breed = model.Breed;
+            existingPet.Sex = model.Sex;
+            existingPet.BirthDate = model.BirthDate;
+            existingPet.AgeYears = model.AgeYears;
+            existingPet.Color = model.Color;
+            existingPet.Weight = model.Weight;
+            existingPet.OwnerName = model.OwnerName;
+            existingPet.ContactNumber = model.ContactNumber;
+            existingPet.Notes = model.Notes;
 
             try
             {
-                await _petService.UpdateAsync(pet);
+                await _petService.UpdateAsync(existingPet);
+
+                TempData["SuccessMessage"] = "Pet successfully updated.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
         }
 
+
+
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -125,6 +159,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -135,8 +170,12 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
 
             await _petService.DeleteAsync(id);
+
+            TempData["SuccessMessage"] = "Pet successfully deleted.";
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private static Pet MapToPet(PetFormsViewModel model)
         {
@@ -150,9 +189,16 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 BirthDate = model.BirthDate,
                 AgeYears = model.AgeYears,
                 Color = model.Color,
-                Weight = model.Weight
+                Weight = model.Weight,
+                OwnerName = model.OwnerName,
+                ContactNumber = model.ContactNumber,
+                Notes = model.Notes,
+                IsActive = true,
+                CreatedAt = DateTime.Now
             };
         }
+
+ 
 
         private static PetFormsViewModel MapToPetFormsViewModel(Pet pet)
         {
@@ -166,7 +212,10 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 BirthDate = pet.BirthDate,
                 AgeYears = pet.AgeYears,
                 Color = pet.Color,
-                Weight = pet.Weight
+                Weight = pet.Weight,
+                OwnerName = pet.OwnerName,
+                ContactNumber = pet.ContactNumber,
+                Notes = pet.Notes
             };
         }
     }

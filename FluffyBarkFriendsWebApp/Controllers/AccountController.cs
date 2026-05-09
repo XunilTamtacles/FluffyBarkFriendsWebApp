@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using FluffyBarkFriendsWebApp.Models.Database;
+using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -23,37 +24,35 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         public IActionResult Login(string? returnUrl = null)
         {
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
+            return View(new LoginViewModel
+            {
+                ReturnUrl = returnUrl
+            });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(string username, string password, string? returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            if (!ModelState.IsValid)
             {
-                ViewBag.Error = "Username and password are required.";
-                ViewBag.ReturnUrl = returnUrl;
-                return View();
+                return View(model);
             }
 
-            var user = await _userService.GetByUsernameAsync(username.Trim());
+            var user = await _userService.GetByUsernameAsync(model.Username.Trim());
 
-            if (user == null || !CheckPassword(user, password))
+            if (user == null || !CheckPassword(user, model.Password))
             {
-                ViewBag.Error = "Invalid username or password.";
-                ViewBag.ReturnUrl = returnUrl;
-                return View();
+                ModelState.AddModelError(string.Empty, "Invalid username or password.");
+                return View(model);
             }
 
             var role = NormalizeRole(user.Role);
 
-            if (role != "Admin" && role != "Staff")
+            if (role != "Admin" && role != "Staff" && role != "Client")
             {
-                ViewBag.Error = "Only Admin and Staff accounts can login.";
-                ViewBag.ReturnUrl = returnUrl;
-                return View();
+                ModelState.AddModelError(string.Empty, "This account role is not allowed to login.");
+                return View(model);
             }
 
             var claims = new List<Claim>
@@ -68,12 +67,65 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
             {
-                return Redirect(returnUrl);
+                return Redirect(model.ReturnUrl);
             }
 
-            return RedirectToAction("Index", "Home");
+            if (role == "Client")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return RedirectToAction("Index", "DashBoard");
+        }
+
+        public IActionResult Register()
+        {
+            return View(new RegisterViewModel
+            {
+                Role = "Client"
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var role = NormalizeRole(model.Role);
+
+            if (role != "Admin" && role != "Staff" && role != "Client")
+            {
+                ModelState.AddModelError(nameof(model.Role), "Role must be Admin, Staff, or Client.");
+                return View(model);
+            }
+
+            var user = new User
+            {
+                FullName = model.FullName.Trim(),
+                UserName = model.Username.Trim(),
+                Role = role,
+                IsActive = true,
+                CreatedAt = DateTime.Now
+            };
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+
+            try
+            {
+                await _userService.CreateAsync(user);
+                return RedirectToAction(nameof(Login));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
         }
 
         [HttpPost]
@@ -81,7 +133,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account", "Appointment");
+            return RedirectToAction(nameof(Login), "Account");
         }
 
         public IActionResult AccessDenied()
@@ -103,7 +155,6 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
             catch
             {
-                // For old records that are not hashed yet
             }
 
             return user.PasswordHash == password;
@@ -126,6 +177,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             if (role.Equals("staff", StringComparison.OrdinalIgnoreCase))
             {
                 return "Staff";
+            }
+
+            if (role.Equals("client", StringComparison.OrdinalIgnoreCase))
+            {
+                return "Client";
             }
 
             return role;

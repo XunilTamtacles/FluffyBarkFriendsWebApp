@@ -1,0 +1,44 @@
+﻿@model FluffyBarkFriendsWebApp.Models.Database.User
+
+@{
+    ViewData["Title"] = "Delete User";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Admin Management</span>
+    <h1>Delete User</h1>
+    <p>Please confirm before deactivating this user account.</p>
+</section>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        <div class="alert alert-danger rounded-4">
+            Are you sure you want to delete this user?
+        </div>
+
+        <dl class="row">
+            <dt class="col-sm-3">Full Name</dt>
+            <dd class="col-sm-9">@Model.FullName</dd>
+
+            <dt class="col-sm-3">Username</dt>
+            <dd class="col-sm-9">@Model.UserName</dd>
+
+            <dt class="col-sm-3">Role</dt>
+            <dd class="col-sm-9">@Model.Role</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+
+            <input asp-for="UserId" type="hidden" />
+
+            <button type="submit" class="btn btn-danger rounded-pill px-4">
+                Delete
+            </button>
+
+            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>

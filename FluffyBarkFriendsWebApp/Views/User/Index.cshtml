@@ -1,0 +1,93 @@
+﻿@model List<FluffyBarkFriendsWebApp.Models.Database.User>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Admin Management</span>
+    <h1>Users</h1>
+    <p>Manage admin, staff, and client accounts.</p>
+</section>
+
+<div class="d-flex justify-content-end mb-3">
+    <a asp-action="Create" class="btn btn-success rounded-pill px-4">
+        + Add User
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@user.FullName</td>
+                                <td>@user.UserName</td>
+                                <td>
+                                    <span class="badge rounded-pill bg-success">
+                                        @user.Role
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge rounded-pill bg-primary">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill bg-secondary">Inactive</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details"
+                                       asp-route-id="@user.UserId"
+                                       class="btn btn-sm btn-outline-success rounded-pill">
+                                        Details
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@user.UserId"
+                                       class="btn btn-sm btn-outline-primary rounded-pill">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@user.UserId"
+                                       class="btn btn-sm btn-outline-danger rounded-pill">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <div style="font-size:60px;">👥</div>
+                <h3 class="h5 mt-3">No users found</h3>
+                <p class="text-muted">Start by adding an admin, staff, or client account.</p>
+                <a asp-action="Create" class="btn btn-success rounded-pill px-4">
+                    Add User
+                </a>
+            </div>
+        }
+    </div>
+</div>

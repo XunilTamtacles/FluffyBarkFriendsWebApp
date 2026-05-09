@@ -27,6 +27,12 @@ public partial class Pet
 
     public DateTime CreatedAt { get; set; }
 
+    public string? OwnerName { get; set; }
+
+    public string? ContactNumber { get; set; }
+
+    public string? Notes { get; set; }
+
     public virtual ICollection<Appointment> Appointment { get; set; } = new List<Appointment>();
 
     public virtual ICollection<Vaccination> VaccinationRecord { get; set; } = new List<Vaccination>();

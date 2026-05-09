@@ -1,5 +1,4 @@
 ﻿@using FluffyBarkFriendsWebApp.Models.ViewModels
-
 @model DashBoardViewModel
 
 @{
@@ -83,6 +82,80 @@
             <div class="card-body">
                 <span class="text-muted small">Cancelled</span>
                 <h2 class="h5 mb-0">@Model.CancelledAppointmentsCount</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mt-3">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Today Appointments</h2>
+
+                @if (Model.TodayAppointments.Any())
+                {
+                    <table class="table table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Pet</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var appointment in Model.TodayAppointments)
+                            {
+                                <tr>
+                                    <td>@appointment.AppointmentTime</td>
+                                    <td>@appointment.Pet?.PetName</td>
+                                    <td>@appointment.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No appointments scheduled for today.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Upcoming Vaccinations</h2>
+
+                @if (Model.UpcomingVaccinations.Any())
+                {
+                    <table class="table table-sm align-middle">
+                        <thead>
+                            <tr>
+                                <th>Pet</th>
+                                <th>Vaccine</th>
+                                <th>Next Due</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var vaccination in Model.UpcomingVaccinations)
+                            {
+                                <tr>
+                                    <td>@vaccination.Pet?.PetName</td>
+                                    <td>@vaccination.VaccineName</td>
+                                    <td>@vaccination.NextDueDate</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">No upcoming vaccinations.</p>
+                }
             </div>
         </div>
     </div>

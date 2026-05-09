@@ -1,0 +1,54 @@
+﻿@model FluffyBarkFriendsWebApp.Models.ViewModels.MedicalHistoryFormsViewModel
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <label asp-for="PetId" class="form-label"></label>
+        <input asp-for="PetId" class="form-control" placeholder="Enter Pet ID" />
+        <span asp-validation-for="PetId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="CreatedByUserId" class="form-label"></label>
+        <input asp-for="CreatedByUserId" class="form-control" placeholder="Enter User ID" />
+        <span asp-validation-for="CreatedByUserId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VisitDate" class="form-label"></label>
+        <input asp-for="VisitDate" type="date" class="form-control" />
+        <span asp-validation-for="VisitDate" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="VisitTime" class="form-label"></label>
+        <input asp-for="VisitTime" type="time" class="form-control" />
+        <span asp-validation-for="VisitTime" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Condition" class="form-label"></label>
+        <input asp-for="Condition" class="form-control" placeholder="Condition" />
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Diagnosis" class="form-label"></label>
+        <input asp-for="Diagnosis" class="form-control" placeholder="Diagnosis" />
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Treatment" class="form-label"></label>
+        <input asp-for="Treatment" class="form-control" placeholder="Treatment" />
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Medication" class="form-label"></label>
+        <input asp-for="Medication" class="form-control" placeholder="Medication" />
+    </div>
+
+    <div class="col-12">
+        <label asp-for="Notes" class="form-label"></label>
+        <textarea asp-for="Notes" rows="3" class="form-control"></textarea>
+    </div>
+
+</div>
