@@ -4,62 +4,72 @@
 
 <section class="pet-landing">
 
-    <span class="pet-kicker">
-        Veterinary Clinic System
-    </span>
+    <div class="pet-landing-content">
 
-    <h1>
-        We care about <br />
-        your pets
-    </h1>
+        <div class="hero-logo-wrapper">
+            <img src="~/images/fluffy-logo.png"
+                 alt="Fluffy BarkFriends Logo"
+                 class="hero-logo" />
+        </div>
 
-    <p>
-        Fluffy BarkFriends helps pet owners easily request appointments online while the clinic efficiently manages pet records, medical history, and vaccination schedules in one centralized veterinary system.
-    </p>
+        <span class="pet-kicker">
+            Veterinary Clinic System
+        </span>
 
-    <div class="pet-actions">
+        <h1>
+            We care about <br />
+            your pets
+        </h1>
 
-        <a asp-controller="Appointment"
-           asp-action="Book"
-           class="pet-main-btn">
-            📅 Book Appointment
-        </a>
+        <p>
+            Fluffy BarkFriends helps pet owners easily request appointments online while the clinic efficiently manages pet records, medical history, and vaccination schedules in one centralized veterinary system.
+        </p>
 
-        @if (User.Identity != null && User.Identity.IsAuthenticated)
-        {
-            @if (User.IsInRole("Admin"))
+        <div class="pet-actions">
+
+            <a asp-controller="Appointment"
+               asp-action="Book"
+               class="pet-main-btn">
+                📅 Book Appointment
+            </a>
+
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
             {
-                <a asp-controller="DashBoard"
-                   asp-action="Index"
-                   class="pet-outline-btn">
-                    📊 Admin Dashboard
-                </a>
-            }
-            else if (User.IsInRole("Staff"))
-            {
-                <a asp-controller="DashBoard"
-                   asp-action="Index"
-                   class="pet-outline-btn">
-                    🩺 Staff Dashboard
-                </a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="DashBoard"
+                       asp-action="Index"
+                       class="pet-outline-btn">
+                        📊 Admin Dashboard
+                    </a>
+                }
+                else if (User.IsInRole("Staff"))
+                {
+                    <a asp-controller="DashBoard"
+                       asp-action="Index"
+                       class="pet-outline-btn">
+                        🩺 Staff Dashboard
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Client"
+                       asp-action="Index"
+                       class="pet-outline-btn">
+                        🐾 My Portal
+                    </a>
+                }
             }
             else
             {
-                <a asp-controller="Client"
-                   asp-action="Index"
+                <a asp-controller="Account"
+                   asp-action="Login"
                    class="pet-outline-btn">
-                    🐾 My Portal
+                    🔐 Login
                 </a>
             }
-        }
-        else
-        {
-            <a asp-controller="Account"
-               asp-action="Login"
-               class="pet-outline-btn">
-                🔐 Login
-            </a>
-        }
+
+        </div>
 
     </div>
 

@@ -55,6 +55,12 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return View(model);
             }
 
+            if (!user.IsActive)
+            {
+                ModelState.AddModelError(string.Empty, "This account is inactive.");
+                return View(model);
+            }
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
@@ -62,22 +68,30 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 new Claim(ClaimTypes.Role, role)
             };
 
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
             var principal = new ClaimsPrincipal(identity);
 
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal
+            );
 
-            if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+            if (!string.IsNullOrWhiteSpace(model.ReturnUrl) &&
+                Url.IsLocalUrl(model.ReturnUrl))
             {
                 return Redirect(model.ReturnUrl);
             }
 
-            if (role == "Client")
+            if (role == "Admin" || role == "Staff")
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "DashBoard");
             }
 
-            return RedirectToAction("Index", "DashBoard");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult Register()
@@ -133,7 +147,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction(nameof(Login), "Account");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult AccessDenied()
@@ -145,7 +159,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
         {
             try
             {
-                var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+                var result = _passwordHasher.VerifyHashedPassword(
+                    user,
+                    user.PasswordHash,
+                    password
+                );
 
                 if (result == PasswordVerificationResult.Success ||
                     result == PasswordVerificationResult.SuccessRehashNeeded)

@@ -1,0 +1,101 @@
+﻿@model IEnumerable<FluffyBarkFriendsWebApp.Models.Database.Appointment>
+
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<section class="page-panel">
+
+    <div class="page-header">
+
+        <p class="eyebrow">
+            Client Portal
+        </p>
+
+        <h1>
+            My Appointments
+        </h1>
+
+        <p class="page-description">
+            View your appointment requests and clinic approval status.
+        </p>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table custom-table align-middle">
+
+            <thead>
+
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @item.AppointmentDate
+                        </td>
+
+                        <td>
+                            @item.AppointmentTime
+                        </td>
+
+                        <td>
+                            @item.ReasonVisit
+                        </td>
+
+                        <td>
+
+                            @if (item.Status == "Pending")
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+                            }
+                            else if (item.Status == "Confirmed")
+                            {
+                                <span class="badge bg-success">
+                                    Confirmed
+                                </span>
+                            }
+                            else if (item.Status == "Cancelled")
+                            {
+                                <span class="badge bg-danger">
+                                    Cancelled
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    @item.Status
+                                </span>
+                            }
+
+                        </td>
+
+                        <td>
+                            @item.Remarks
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>

@@ -1,0 +1,78 @@
+﻿@model IEnumerable<FluffyBarkFriendsWebApp.Models.Database.Pet>
+
+@{
+    ViewData["Title"] = "My Pet";
+}
+
+<section class="page-panel">
+
+    <div class="page-header">
+
+        <p class="eyebrow">
+            Client Portal
+        </p>
+
+        <h1>
+            My Pets
+        </h1>
+
+        <p class="page-description">
+            View your registered pets and their information.
+        </p>
+
+        <div class="add-btn-wrapper">
+            <a asp-controller="Client"
+               asp-action="AddPet"
+               class="pet-main-btn">
+                🐶 Add Pet
+            </a>
+        </div>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table custom-table align-middle">
+
+            <thead>
+                <tr>
+                    <th>Pet Name</th>
+                    <th>Species</th>
+                    <th>Breed</th>
+                    <th>Sex</th>
+                    <th>Birth Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.PetName</td>
+                        <td>@item.Species</td>
+                        <td>@item.Breed</td>
+                        <td>@item.Sex</td>
+                        <td>@item.BirthDate</td>
+
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>

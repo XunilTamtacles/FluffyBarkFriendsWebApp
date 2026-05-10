@@ -1,10 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>@ViewData["Title"] - Fluffy BarkFriends</title>
+    <title>
+        @ViewData["Title"] - Fluffy & BarkFriends
+    </title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet"
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -16,151 +23,237 @@
 
 <body>
 
-  
-    <header>
+    <header class="main-header">
 
-        <nav class="navbar navbar-expand-lg app-navbar">
+        <nav class="navbar navbar-expand-lg">
 
-            <div class="container-fluid">
+            <div class="container">
 
-               
                 <a class="navbar-brand app-brand"
                    asp-controller="Home"
                    asp-action="Index">
 
-                    <img src="/images/fluffy-logo.png"
-                         alt="Fluffy BarkFriends Logo"
+                    <img src="~/images/fluffy-logo.png"
+                         alt="Fluffy & BarkFriends Logo"
                          class="brand-logo" />
 
-                    <span class="brand-text">
-
+                    <div class="brand-text">
                         <span class="brand-name">
-                            Fluffy BarkFriends
+                            Fluffy <span>&</span> BarkFriends
                         </span>
 
                         <span class="brand-subtitle">
                             Veterinary Clinic
                         </span>
-
-                    </span>
+                    </div>
 
                 </a>
 
                 <button class="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#mainNavbar">
+                        data-bs-target="#navMenu">
 
                     <span class="navbar-toggler-icon"></span>
 
                 </button>
 
-               
                 <div class="collapse navbar-collapse"
-                     id="mainNavbar">
+                     id="navMenu">
 
-                   
-                    <ul class="navbar-nav mx-auto app-nav-links">
+                    <ul class="navbar-nav mx-auto">
 
-                      
                         <li class="nav-item">
-
                             <a class="nav-link"
                                asp-controller="Home"
                                asp-action="Index">
-
                                 Home
-
                             </a>
-
                         </li>
 
-                       
                         <li class="nav-item">
-
                             <a class="nav-link"
                                asp-controller="Home"
                                asp-action="About">
-
                                 About
-
                             </a>
-
                         </li>
 
-                       
                         <li class="nav-item">
-
                             <a class="nav-link"
                                asp-controller="Home"
                                asp-action="Contact">
-
                                 Contact
-
                             </a>
-
                         </li>
 
-                        
-                        <li class="nav-item">
-
-                            <a class="nav-link nav-cta"
-                               asp-controller="Appointment"
-                               asp-action="Book">
-
-                                Book Appointment
-
-                            </a>
-
-                        </li>
-                    
-                       
-                    </ul>
-
-                    <ul class="navbar-nav ms-auto">
-
-                        <li class="nav-item dropdown">
-
-                            <a class="nav-link nav-login-btn dropdown-toggle"
-                               href="#"
-                               role="button"
-                               data-bs-toggle="dropdown">
-
-                                Login
-
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-end login-dropdown">
-
-                                <li>
-
-                                    <a class="dropdown-item"
-                                       asp-controller="Account"
-                                       asp-action="Login">
-
-                                        Login
-
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="DashBoard"
+                                       asp-action="Index">
+                                        Dashboard
                                     </a>
-
                                 </li>
 
-                                <li>
-
-                                    <a class="dropdown-item"
-                                       asp-controller="Account"
-                                       asp-action="Register">
-
-                                        Register
-
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Appointment"
+                                       asp-action="Index">
+                                        Appointments
                                     </a>
-
                                 </li>
 
-                            </ul>
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Pet"
+                                       asp-action="Index">
+                                        Pets
+                                    </a>
+                                </li>
 
-                        </li>
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="MedicalHistory"
+                                       asp-action="Index">
+                                        Medical History
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Vaccination"
+                                       asp-action="Index">
+                                        Vaccination
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Client"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Appointment"
+                                       asp-action="Book">
+                                        Book Appointment
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Client"
+                                       asp-action="MyPets">
+                                        My Pet
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Client"
+                                       asp-action="MyAppointments">
+                                        My Appointments
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Client"
+                                       asp-action="MyMedicalHistory">
+                                        Medical History
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="Client"
+                                       asp-action="MyVaccinations">
+                                        Vaccination
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="User"
+                                       asp-action="Index">
+                                        Users
+                                    </a>
+                                </li>
+                            }
+                        }
 
                     </ul>
+
+                    <div class="nav-right">
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="profile-box">
+
+                                <div class="profile-icon">
+                                    👤
+                                </div>
+
+                                <div class="profile-name">
+                                    @User.Identity.Name
+                                </div>
+
+                            </div>
+
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post"
+                                  class="m-0">
+
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn logout-btn">
+                                    Logout
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="dropdown">
+
+                                <button class="btn login-dropdown-btn dropdown-toggle"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    Login
+                                </button>
+
+                                <ul class="dropdown-menu login-menu">
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Account"
+                                           asp-action="Login">
+                                            🔐 Login
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Account"
+                                           asp-action="Register">
+                                            📝 Register
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </div>
+                        }
+
+                    </div>
 
                 </div>
 
@@ -170,10 +263,8 @@
 
     </header>
 
-    <main class="container-fluid px-4 py-4">
-
+    <main>
         @RenderBody()
-
     </main>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -181,4 +272,5 @@
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
+
 </html>

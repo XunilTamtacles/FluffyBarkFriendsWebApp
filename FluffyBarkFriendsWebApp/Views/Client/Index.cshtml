@@ -1,29 +1,29 @@
 ﻿@model FluffyBarkFriendsWebApp.Models.ViewModels.ClientPortalViewModel
 
 @{
-    ViewData["Title"] = "My Portal";
+    ViewData["Title"] = "My Pet Portal";
 }
 
 <section class="page-panel">
     <span class="eyebrow">Client Portal</span>
 
-    <h1>Welcome to Your Pet Portal</h1>
+    <h1>My Pet Portal</h1>
 
     <p class="lead text-muted">
-        View your pet information, appointments, medical history, and vaccination records.
+        View your pets, appointment requests, medical history, and vaccination records.
     </p>
 
     <div class="mt-4 d-flex gap-2 flex-wrap">
         <a asp-controller="Appointment"
            asp-action="Book"
            class="btn btn-success">
-            📅 Book Appointment
+            📅 Request Appointment
         </a>
 
         <a asp-controller="Pet"
            asp-action="Index"
            class="btn btn-outline-success">
-            🐾 My Pets
+            🐾 View My Pets
         </a>
 
         <a asp-controller="MedicalHistory"
@@ -41,10 +41,11 @@
 </section>
 
 <div class="row g-4 mb-4">
+
     <div class="col-md-3">
         <div class="portal-stat-card">
             <div class="portal-icon">🐾</div>
-            <span>Pets</span>
+            <span>My Pets</span>
             <h2>@Model.PetsCount</h2>
         </div>
     </div>
@@ -72,13 +73,15 @@
             <h2>@Model.VaccinationsCount</h2>
         </div>
     </div>
+
 </div>
 
 <div class="row g-4">
+
     <div class="col-lg-6">
         <div class="card h-100">
             <div class="card-body p-4">
-                <h3 class="fw-bold mb-3">📅 Recent Appointments</h3>
+                <h3 class="fw-bold mb-3">📅 My Appointments</h3>
 
                 @if (Model.Appointments.Any())
                 {
@@ -94,7 +97,7 @@
                 }
                 else
                 {
-                    <p class="text-muted">No appointments found.</p>
+                    <p class="text-muted">No appointment records found.</p>
                 }
             </div>
         </div>
@@ -174,4 +177,5 @@
             </div>
         </div>
     </div>
+
 </div>

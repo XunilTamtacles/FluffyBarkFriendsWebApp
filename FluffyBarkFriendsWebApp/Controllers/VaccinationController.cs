@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FluffyBarkFriendsWebApp.Models.Database;
+using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
 
 namespace FluffyBarkFriendsWebApp.Controllers
@@ -15,15 +16,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _vaccinationService = vaccinationService;
         }
 
-
         public async Task<IActionResult> Index()
         {
             var vaccinations = await _vaccinationService.GetAllAsync();
-
             return View(vaccinations);
         }
-
-       
 
         public async Task<IActionResult> Details(int id)
         {
@@ -37,57 +34,56 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(vaccination);
         }
 
-     
-
         [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
-            var vaccination = new Vaccination
+            var model = new VaccinationRecordFormsViewModel
             {
                 DateGiven = DateOnly.FromDateTime(DateTime.Today),
                 NextDueDate = DateOnly.FromDateTime(DateTime.Today.AddMonths(1))
             };
 
-            return View(vaccination);
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> Create(Vaccination vaccination)
+        public async Task<IActionResult> Create(VaccinationRecordFormsViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(vaccination);
-            }
-
-            if (vaccination.NextDueDate.HasValue &&
-                vaccination.NextDueDate.Value < vaccination.DateGiven)
+            if (model.NextDueDate.HasValue &&
+                model.NextDueDate.Value < model.DateGiven)
             {
                 ModelState.AddModelError(
                     "NextDueDate",
                     "Next due date cannot be earlier than date given.");
-
-                return View(vaccination);
             }
 
-            try
+            if (!ModelState.IsValid)
             {
-                await _vaccinationService.CreateAsync(vaccination);
-
-                TempData["SuccessMessage"] = "Vaccination record successfully added.";
-
-                return RedirectToAction(nameof(Index));
+                return View(model);
             }
-            catch (Exception ex)
+
+            var vaccination = new Vaccination
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                PetId = model.PetId,
+                AppointmentId = (int)model.AppointmentId,
+                VaccineName = model.VaccineName,
+                DateGiven = model.DateGiven,
+                NextDueDate = model.NextDueDate,
+                Dose = model.Dose,
+                Remarks = model.Remarks,
+                RecordedByUserId = model.RecordedByUserId,
+                CreatedAt = DateTime.Now,
+                IsDeleted = false
+            };
 
-                return View(vaccination);
-            }
+            await _vaccinationService.CreateAsync(vaccination);
+
+            TempData["SuccessMessage"] = "Vaccination record successfully added.";
+
+            return RedirectToAction(nameof(Index));
         }
-
-   
 
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id)
@@ -99,67 +95,67 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
-            return View(vaccination);
+            var model = new VaccinationRecordFormsViewModel
+            {
+                VaccinationId = vaccination.VaccinationId,
+                PetId = vaccination.PetId,
+                AppointmentId = vaccination.AppointmentId,
+                VaccineName = vaccination.VaccineName,
+                DateGiven = vaccination.DateGiven,
+                NextDueDate = vaccination.NextDueDate,
+                Dose = vaccination.Dose,
+                Remarks = vaccination.Remarks,
+                RecordedByUserId = vaccination.RecordedByUserId
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> Edit(int id, Vaccination vaccination)
+        public async Task<IActionResult> Edit(int id, VaccinationRecordFormsViewModel model)
         {
-            if (id != vaccination.VaccinationId)
+            if (id != model.VaccinationId)
             {
                 return NotFound();
             }
 
-            if (!ModelState.IsValid)
-            {
-                return View(vaccination);
-            }
-
-            if (vaccination.NextDueDate.HasValue &&
-                vaccination.NextDueDate.Value < vaccination.DateGiven)
+            if (model.NextDueDate.HasValue &&
+                model.NextDueDate.Value < model.DateGiven)
             {
                 ModelState.AddModelError(
                     "NextDueDate",
                     "Next due date cannot be earlier than date given.");
-
-                return View(vaccination);
             }
 
-            var existingVaccination = await _vaccinationService.GetByIdAsync(id);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
-            if (existingVaccination == null)
+            var vaccination = await _vaccinationService.GetByIdAsync(id);
+
+            if (vaccination == null)
             {
                 return NotFound();
             }
 
-            existingVaccination.PetId = vaccination.PetId;
-            existingVaccination.AppointmentId = vaccination.AppointmentId;
-            existingVaccination.VaccineName = vaccination.VaccineName;
-            existingVaccination.DateGiven = vaccination.DateGiven;
-            existingVaccination.NextDueDate = vaccination.NextDueDate;
-            existingVaccination.Dose = vaccination.Dose;
-            existingVaccination.Remarks = vaccination.Remarks;
-            existingVaccination.RecordedByUserId = vaccination.RecordedByUserId;
+            vaccination.PetId = model.PetId;
+            vaccination.AppointmentId = (int)model.AppointmentId;
+            vaccination.VaccineName = model.VaccineName;
+            vaccination.DateGiven = model.DateGiven;
+            vaccination.NextDueDate = model.NextDueDate;
+            vaccination.Dose = model.Dose;
+            vaccination.Remarks = model.Remarks;
+            vaccination.RecordedByUserId = model.RecordedByUserId;
 
-            try
-            {
-                await _vaccinationService.UpdateAsync(existingVaccination);
+            await _vaccinationService.UpdateAsync(vaccination);
 
-                TempData["SuccessMessage"] = "Vaccination record successfully updated.";
+            TempData["SuccessMessage"] = "Vaccination record successfully updated.";
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-
-                return View(vaccination);
-            }
+            return RedirectToAction(nameof(Index));
         }
-
-   
 
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)

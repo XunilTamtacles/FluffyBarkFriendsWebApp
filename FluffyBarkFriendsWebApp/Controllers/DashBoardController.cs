@@ -29,25 +29,73 @@ namespace FluffyBarkFriendsWebApp.Controllers
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
 
+           
+
             var pets = await _petService.GetAllAsync();
+
             var appointments = await _appointmentService.GetAllAsync();
-            var upcomingVaccinations = await _vaccinationService.GetUpcomingAsync();
-            var overdueVaccinations = await _vaccinationService.GetOverdueAsync();
-            var recentMedicalCases = await _medicalHistoryService.GetRecentCasesAsync();
+
+            var upcomingVaccinations =
+                await _vaccinationService.GetUpcomingAsync();
+
+            var overdueVaccinations =
+                await _vaccinationService.GetOverdueAsync();
+
+            var recentMedicalCases =
+                await _medicalHistoryService.GetRecentCasesAsync();
+
+         
 
             var model = new DashBoardViewModel
             {
+               
+
                 ActivePetsCount = pets.Count,
-                TodayAppointmentsCount = appointments.Count(a => a.AppointmentDate == today),
 
-                PendingAppointmentsCount = appointments.Count(a => a.Status.Equals("Pending", StringComparison.OrdinalIgnoreCase)),
-                ConfirmedAppointmentsCount = appointments.Count(a => a.Status.Equals("Confirmed", StringComparison.OrdinalIgnoreCase)),
-                CancelledAppointmentsCount = appointments.Count(a => a.Status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase)),
-                CompletedAppointmentsCount = appointments.Count(a => a.Status.Equals("Completed", StringComparison.OrdinalIgnoreCase)),
+                
 
-                UpcomingVaccinationsCount = upcomingVaccinations.Count,
-                OverdueVaccinationsCount = overdueVaccinations.Count,
-                RecentMedicalCasesCount = recentMedicalCases.Count,
+                TodayAppointmentsCount =
+                    appointments.Count(a =>
+                        a.AppointmentDate == today),
+
+                PendingAppointmentsCount =
+                    appointments.Count(a =>
+                        a.Status != null &&
+                        a.Status.Equals(
+                            "Pending",
+                            StringComparison.OrdinalIgnoreCase)),
+
+                ConfirmedAppointmentsCount =
+                    appointments.Count(a =>
+                        a.Status != null &&
+                        a.Status.Equals(
+                            "Confirmed",
+                            StringComparison.OrdinalIgnoreCase)),
+
+                CancelledAppointmentsCount =
+                    appointments.Count(a =>
+                        a.Status != null &&
+                        a.Status.Equals(
+                            "Cancelled",
+                            StringComparison.OrdinalIgnoreCase)),
+
+                CompletedAppointmentsCount =
+                    appointments.Count(a =>
+                        a.Status != null &&
+                        a.Status.Equals(
+                            "Completed",
+                            StringComparison.OrdinalIgnoreCase)),
+
+          
+
+                UpcomingVaccinationsCount =
+                    upcomingVaccinations.Count,
+
+                OverdueVaccinationsCount =
+                    overdueVaccinations.Count,
+
+                RecentMedicalCasesCount =
+                    recentMedicalCases.Count,
 
                 TodayAppointments = appointments
                     .Where(a => a.AppointmentDate == today)

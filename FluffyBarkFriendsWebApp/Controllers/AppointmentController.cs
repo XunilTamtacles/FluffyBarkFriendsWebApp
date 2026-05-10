@@ -1,4 +1,5 @@
-﻿using FluffyBarkFriendsWebApp.Models.Database;
+﻿using System.Security.Claims;
+using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -16,13 +17,14 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _appointmentService = appointmentService;
         }
 
+        [Authorize(Roles = "Admin,Staff,Client")]
         public async Task<IActionResult> Index()
         {
             var appointments = await _appointmentService.GetAllAsync();
-
             return View(appointments);
         }
 
+        [Authorize(Roles = "Admin,Staff,Client")]
         public async Task<IActionResult> Details(int id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
@@ -73,14 +75,17 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
-        [AllowAnonymous]
+        [Authorize(Roles = "Client")]
         public IActionResult Book()
         {
+            var userId = GetCurrentUserId();
+
             var model = new AppointmentFormsViewModel
             {
                 AppointmentDate = DateOnly.FromDateTime(DateTime.Today),
                 AppointmentTime = new TimeOnly(9, 0),
-                Status = "Pending"
+                Status = "Pending",
+                CreatedByUserId = userId
             };
 
             return View(model);
@@ -88,10 +93,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Staff,Client")]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Book(AppointmentFormsViewModel model)
         {
             model.Status = "Pending";
+            model.CreatedByUserId = GetCurrentUserId();
 
             if (!ModelState.IsValid)
             {
@@ -114,6 +120,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
+        [Authorize(Roles = "Client")]
         public IActionResult Confirmation()
         {
             return View();
@@ -207,6 +214,18 @@ namespace FluffyBarkFriendsWebApp.Controllers
             TempData["Success"] = "Appointment deleted successfully.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return 0;
+            }
+
+            return int.Parse(userId);
         }
 
         private static Appointment MapToAppointment(AppointmentFormsViewModel model)

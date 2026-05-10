@@ -5,85 +5,115 @@
     ViewData["Title"] = "Login";
 }
 
-<section class="auth-panel">
+<section class="login-wrapper">
 
-    <div class="auth-copy">
+    <div class="login-container">
 
-        <img src="~/images/fluffy-logo.png"
-             alt="Fluffy BarkFriends Logo" />
+        <div class="login-form-section">
 
-        <h1>Welcome Back</h1>
+            <h2 class="welcome-title">
+                Welcome Back
+            </h2>
 
-        <p>
-            Login to manage appointments, pets,
-            vaccination schedules, and medical records.
-        </p>
+            <p class="welcome-subtitle">
+                Login to manage appointments, pets,
+                vaccination schedules, and medical records.
+            </p>
+
+            <h3 class="login-heading">
+                👤 Login
+            </h3>
+
+            <form asp-action="Login"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3">
+                </div>
+
+                <input asp-for="ReturnUrl" type="hidden" />
+
+                <div class="mb-4">
+
+                    <label asp-for="Username"
+                           class="form-label">
+                        UserName
+                    </label>
+
+                    <input asp-for="Username"
+                           class="form-control login-input"
+                           placeholder="Enter username" />
+
+                    <span asp-validation-for="Username"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+                <div class="mb-4">
+
+                    <label asp-for="Password"
+                           class="form-label">
+                        Password
+                    </label>
+
+                    <input asp-for="Password"
+                           type="password"
+                           class="form-control login-input"
+                           placeholder="Enter password" />
+
+                    <span asp-validation-for="Password"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+                <div class="form-check mb-4">
+
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="rememberMe" />
+
+                    <label class="form-check-label"
+                           for="rememberMe">
+                        Remember me
+                    </label>
+
+                </div>
+
+                <button type="submit"
+                        class="login-btn">
+                    Login
+                </button>
+
+                <p class="register-link-text">
+
+                    Don’t have an account yet?
+
+                    <a asp-action="Register">
+                        Register here
+                    </a>
+
+                </p>
+
+            </form>
+
+        </div>
+
+        
+        <div class="login-image-section">
+
+            <div class="orange-corner"></div>
+
+            <img src="~/images/fluffy-logo.png"
+                 alt="Fluffy BarkFriends"
+                 class="login-big-logo" />
+
+        </div>
 
     </div>
-
-    <form asp-action="Login"
-          method="post"
-          class="auth-form">
-
-        @Html.AntiForgeryToken()
-
-        <h2 class="mb-4">Login</h2>
-
-        <div asp-validation-summary="ModelOnly"
-             class="text-danger mb-3">
-        </div>
-
-        <input asp-for="ReturnUrl" type="hidden" />
-
-        <div class="mb-3">
-
-            <label asp-for="Username"
-                   class="form-label">
-            </label>
-
-            <input asp-for="Username"
-                   class="form-control"
-                   placeholder="Enter username" />
-
-            <span asp-validation-for="Username"
-                  class="text-danger">
-            </span>
-
-        </div>
-
-        <div class="mb-4">
-
-            <label asp-for="Password"
-                   class="form-label">
-            </label>
-
-            <input asp-for="Password"
-                   type="password"
-                   class="form-control"
-                   placeholder="Enter password" />
-
-            <span asp-validation-for="Password"
-                  class="text-danger">
-            </span>
-
-        </div>
-
-        <button type="submit"
-                class="btn btn-success w-100 py-2">
-            Login
-        </button>
-
-        <p class="auth-switch">
-
-            No account yet?
-
-            <a asp-action="Register">
-                Register here
-            </a>
-
-        </p>
-
-    </form>
 
 </section>
 
