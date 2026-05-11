@@ -1,131 +1,79 @@
-﻿@using FluffyBarkFriendsWebApp.Models.ViewModels
-@model RegisterViewModel
+﻿@model FluffyBarkFriendsWebApp.Models.ViewModels.RegisterViewModel
 
 @{
     ViewData["Title"] = "Register";
 }
 
-<section class="login-wrapper">
-
-    <div class="login-container">
-
-        
-        <div class="login-form-section">
-
-            <h1 class="welcome-title">
-                Create Account
-            </h1>
-
+<section class="register-wrapper">
+    <div class="register-container">
+        <div class="register-form-section">
+            <h1 class="welcome-title">Create Account</h1>
             <p class="welcome-subtitle">
-                Register to access appointments, pet records,
-                vaccination tracking, and medical history services.
+                Register to access appointments, pet records, vaccination tracking, and medical history services.
             </p>
 
             <form asp-action="Register" method="post">
-
                 @Html.AntiForgeryToken()
 
-                <div asp-validation-summary="ModelOnly"
-                     class="text-danger mb-3">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control register-input" placeholder="Enter full name" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-
-                    <label asp-for="Username"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="Username"
-                           class="form-control login-input"
-                           placeholder="Enter username" />
-
-                    <span asp-validation-for="Username"
-                          class="text-danger">
-                    </span>
-
+                    <label asp-for="UserName" class="form-label"></label>
+                    <input asp-for="UserName" class="form-control register-input" placeholder="Enter username" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-
-                    <label asp-for="Email"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="Email"
-                           class="form-control login-input"
-                           placeholder="Enter email address" />
-
-                    <span asp-validation-for="Email"
-                          class="text-danger">
-                    </span>
-
+                    <label asp-for="Contact" class="form-label"></label>
+                    <input asp-for="Contact" class="form-control register-input" placeholder="Enter email or phone number" />
+                    <span asp-validation-for="Contact" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control register-input" placeholder="Enter password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
 
-                    <label asp-for="Password"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="Password"
-                           type="password"
-                           class="form-control login-input"
-                           placeholder="Enter password" />
-
-                    <span asp-validation-for="Password"
-                          class="text-danger">
-                    </span>
-
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control register-input" placeholder="Confirm password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
 
                 <div class="mb-4">
-
-                    <label asp-for="ConfirmPassword"
-                           class="form-label">
-                    </label>
-
-                    <input asp-for="ConfirmPassword"
-                           type="password"
-                           class="form-control login-input"
-                           placeholder="Confirm password" />
-
-                    <span asp-validation-for="ConfirmPassword"
-                          class="text-danger">
-                    </span>
-
+                    <label asp-for="Role" class="form-label"></label>
+                    <select asp-for="Role" class="form-control register-input">
+                        <option value="">Select role</option>
+                        <option value="Client">Client</option>
+                        <option value="Staff">Staff</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
                 </div>
 
-                <button type="submit"
-                        class="login-btn">
+                <button type="submit" class="register-btn">
                     Create Account
                 </button>
 
-                <p class="register-link-text">
-
+                <p class="login-link-text text-center">
                     Already have an account?
-
-                    <a asp-action="Login">
-                        Login here
-                    </a>
-
+                    <a asp-action="Login">Login here</a>
                 </p>
-
             </form>
-
         </div>
 
-        <div class="login-image-section">
-
+        <div class="register-image-section">
             <div class="orange-corner"></div>
-
-            <img src="~/images/fluffy-logo.png"
-                 alt="Fluffy BarkFriends Logo"
-                 class="login-big-logo" />
-
+            <img src="~/images/fluffy-logo.png" class="register-big-logo" alt="Fluffy BarkFriends" />
         </div>
-
     </div>
-
 </section>
 
 @section Scripts {

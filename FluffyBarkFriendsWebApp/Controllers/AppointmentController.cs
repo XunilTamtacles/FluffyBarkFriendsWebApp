@@ -17,14 +17,35 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _appointmentService = appointmentService;
         }
 
-        [Authorize(Roles = "Admin,Staff,Client")]
         public async Task<IActionResult> Index()
         {
             var appointments = await _appointmentService.GetAllAsync();
+
+            if (User.IsInRole("Client"))
+            {
+                int userId = GetCurrentUserId();
+
+                appointments = appointments
+                    .Where(a => a.CreatedByUserId == userId)
+                    .ToList();
+            }
+
             return View(appointments);
         }
 
-        [Authorize(Roles = "Admin,Staff,Client")]
+        public IActionResult Book()
+        {
+            var model = new AppointmentFormsViewModel
+            {
+                AppointmentDate = DateOnly.FromDateTime(DateTime.Today),
+                AppointmentTime = new TimeOnly(9, 0),
+                Status = "Pending",
+                CreatedByUserId = GetCurrentUserId()
+            };
+
+            return View("Create", model);
+        }
+
         public async Task<IActionResult> Details(int id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
@@ -34,17 +55,22 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessAppointment(appointment))
+            {
+                return Forbid();
+            }
+
             return View(appointment);
         }
 
-        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             var model = new AppointmentFormsViewModel
             {
                 AppointmentDate = DateOnly.FromDateTime(DateTime.Today),
                 AppointmentTime = new TimeOnly(9, 0),
-                Status = "Pending"
+                Status = "Pending",
+                CreatedByUserId = GetCurrentUserId()
             };
 
             return View(model);
@@ -52,9 +78,14 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(AppointmentFormsViewModel model)
         {
+            if (User.IsInRole("Client"))
+            {
+                model.CreatedByUserId = GetCurrentUserId();
+                model.Status = "Pending";
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -65,68 +96,63 @@ namespace FluffyBarkFriendsWebApp.Controllers
             try
             {
                 await _appointmentService.CreateAsync(appointment);
-                TempData["Success"] = "Appointment created successfully.";
+
+                TempData["SuccessMessage"] = "Appointment request submitted. Please wait for confirmation.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
-        }
-
-        [Authorize(Roles = "Client")]
-        public IActionResult Book()
-        {
-            var userId = GetCurrentUserId();
-
-            var model = new AppointmentFormsViewModel
-            {
-                AppointmentDate = DateOnly.FromDateTime(DateTime.Today),
-                AppointmentTime = new TimeOnly(9, 0),
-                Status = "Pending",
-                CreatedByUserId = userId
-            };
-
-            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Client")]
-        public async Task<IActionResult> Book(AppointmentFormsViewModel model)
-        {
-            model.Status = "Pending";
-            model.CreatedByUserId = GetCurrentUserId();
-
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var appointment = MapToAppointment(model);
-            appointment.Status = "Pending";
-
-            try
-            {
-                await _appointmentService.CreateAsync(appointment);
-                TempData["Success"] = "Appointment request submitted successfully.";
-                return RedirectToAction(nameof(Confirmation));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
-            }
-        }
-
-        [Authorize(Roles = "Client")]
-        public IActionResult Confirmation()
-        {
-            return View();
-        }
-
         [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> Confirm(int id)
+        {
+            var appointment = await _appointmentService.GetByIdAsync(id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            appointment.Status = "Confirmed";
+            appointment.Remarks = "Your appointment has been confirmed.";
+
+            await _appointmentService.UpdateAsync(appointment);
+
+            TempData["SuccessMessage"] = "Appointment confirmed.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            var appointment = await _appointmentService.GetByIdAsync(id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            appointment.Status = "Cancelled";
+            appointment.Remarks = "Your appointment has been cancelled.";
+
+            await _appointmentService.UpdateAsync(appointment);
+
+            TempData["SuccessMessage"] = "Appointment cancelled.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
         public async Task<IActionResult> Edit(int id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
@@ -136,6 +162,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessAppointment(appointment))
+            {
+                return Forbid();
+            }
+
             var model = MapToAppointmentFormsViewModel(appointment);
 
             return View(model);
@@ -143,17 +174,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id, AppointmentFormsViewModel model)
         {
             if (id != model.AppointmentId)
             {
                 return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(model);
             }
 
             var existingAppointment = await _appointmentService.GetByIdAsync(id);
@@ -163,28 +188,40 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
-            existingAppointment.PetId = model.PetId;
-            existingAppointment.AppointmentDate = model.AppointmentDate;
-            existingAppointment.AppointmentTime = model.AppointmentTime;
-            existingAppointment.ReasonVisit = model.ReasonVisit;
-            existingAppointment.Status = string.IsNullOrWhiteSpace(model.Status) ? "Pending" : model.Status;
-            existingAppointment.Remarks = model.Remarks;
-            existingAppointment.CreatedByUserId = model.CreatedByUserId;
+            if (!CanAccessAppointment(existingAppointment))
+            {
+                return Forbid();
+            }
+
+            if (User.IsInRole("Client"))
+            {
+                model.CreatedByUserId = GetCurrentUserId();
+                model.Status = existingAppointment.Status;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var appointment = MapToAppointment(model);
 
             try
             {
-                await _appointmentService.UpdateAsync(existingAppointment);
-                TempData["Success"] = "Appointment updated successfully.";
+                await _appointmentService.UpdateAsync(appointment);
+
+                TempData["SuccessMessage"] = "Appointment updated.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
         }
 
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
@@ -194,12 +231,16 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessAppointment(appointment))
+            {
+                return Forbid();
+            }
+
             return View(appointment);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
@@ -209,23 +250,43 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessAppointment(appointment))
+            {
+                return Forbid();
+            }
+
             await _appointmentService.DeleteAsync(id);
 
-            TempData["Success"] = "Appointment deleted successfully.";
+            TempData["SuccessMessage"] = "Appointment deleted.";
 
             return RedirectToAction(nameof(Index));
         }
 
         private int GetCurrentUserId()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrWhiteSpace(userId))
+            if (!int.TryParse(userIdValue, out int userId))
             {
-                return 0;
+                throw new InvalidOperationException("Logged-in user id was not found.");
             }
 
-            return int.Parse(userId);
+            return userId;
+        }
+
+        private bool CanAccessAppointment(Appointment appointment)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+            {
+                return true;
+            }
+
+            if (User.IsInRole("Client"))
+            {
+                return appointment.CreatedByUserId == GetCurrentUserId();
+            }
+
+            return false;
         }
 
         private static Appointment MapToAppointment(AppointmentFormsViewModel model)
@@ -237,7 +298,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 AppointmentDate = model.AppointmentDate,
                 AppointmentTime = model.AppointmentTime,
                 ReasonVisit = model.ReasonVisit,
-                Status = string.IsNullOrWhiteSpace(model.Status) ? "Pending" : model.Status,
+                Status = model.Status,
                 Remarks = model.Remarks,
                 CreatedByUserId = model.CreatedByUserId
             };

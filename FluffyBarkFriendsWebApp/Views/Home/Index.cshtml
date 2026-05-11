@@ -3,125 +3,60 @@
 }
 
 <section class="pet-landing">
+    <div class="pet-landing-content">
+        <span class="pet-kicker">Veterinary Clinic System</span>
 
-    <span class="pet-kicker">
-        Veterinary Clinic System
-    </span>
+        <h1>
+            We care about <br />
+            your pets
+        </h1>
 
-    <h1>
-        We care about <br />
-        your pets
-    </h1>
+        <p>
+            Fluffy BarkFriends helps pet owners easily request appointments online while the clinic efficiently manages pet records, medical history, and vaccination schedules in one centralized veterinary system.
+        </p>
 
-    <p>
-        Fluffy BarkFriends helps pet owners easily request appointments online while the clinic efficiently manages pet records, medical history, and vaccination schedules in one centralized veterinary system.
-    </p>
+        <div class="pet-actions">
+            <a asp-controller="Appointment"
+               asp-action="Book"
+               class="pet-main-btn">
+                Book Appointment
+            </a>
 
-    <div class="pet-actions">
-
-        <a asp-controller="Appointment"
-           asp-action="Book"
-           class="pet-main-btn">
-            📅 Book Appointment
-        </a>
-
-        @if (User.Identity != null && User.Identity.IsAuthenticated)
-        {
-            @if (User.IsInRole("Admin"))
-            {
-                <a asp-controller="DashBoard"
-                   asp-action="Index"
-                   class="pet-outline-btn">
-                    📊 Admin Dashboard
-                </a>
-            }
-            else if (User.IsInRole("Staff"))
-            {
-                <a asp-controller="DashBoard"
-                   asp-action="Index"
-                   class="pet-outline-btn">
-                    🩺 Staff Dashboard
-                </a>
-            }
-            else
+            @if (User.Identity?.IsAuthenticated == true)
             {
                 <a asp-controller="Client"
                    asp-action="Index"
                    class="pet-outline-btn">
-                    🐾 My Portal
+                    My Portal
                 </a>
             }
-        }
-        else
-        {
-            <a asp-controller="Account"
-               asp-action="Login"
-               class="pet-outline-btn">
-                🔐 Login
-            </a>
-        }
-
+            else
+            {
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="pet-outline-btn">
+                    Login
+                </a>
+            }
+        </div>
     </div>
 
     <div class="pet-landing-visual">
-
         <div class="pet-photo pet-photo-small">
             <img src="~/images/vet-small.png"
-                 alt="Pet Checkup" />
+                 alt="Veterinarian with cat" />
         </div>
 
         <div class="pet-photo pet-photo-main">
             <img src="~/images/vet-main.png"
-                 alt="Veterinary Care" />
+                 alt="Veterinarian with dog" />
         </div>
 
-        <div class="paw-shape">
-            🐾
-        </div>
-
+        <div class="paw-shape">🐾</div>
     </div>
-
-</section>
-
-<section class="services-panel">
-
-    <div class="services-content">
-
-        <p class="eyebrow">
-            Clinic Offers
-        </p>
-
-        <h2>
-            SERVICES
-        </h2>
-
-        <div class="services-grid">
-
-            <ul>
-                <li>Laboratory Diagnosis</li>
-                <li>Direct Microscopy</li>
-                <li>Stool Test</li>
-                <li>Microfilarial Test</li>
-                <li>Vaginal Smear</li>
-                <li>Complete Blood Count (CBC)</li>
-            </ul>
-
-            <ul>
-                <li>Pet Shop / Accessories</li>
-                <li>Veterinary Pharmacy</li>
-                <li>Vaccination and Deworming</li>
-                <li>Veterinary Consultation</li>
-                <li>Grooming Services</li>
-            </ul>
-
-        </div>
-
-    </div>
-
 </section>
 
 <section class="home-service-row">
-
     <div class="home-service-card">
         <div class="service-icon">📅</div>
         <h3>Appointment Booking</h3>
@@ -129,7 +64,7 @@
     </div>
 
     <div class="home-service-card">
-        <div class="service-icon">🐶</div>
+        <div class="service-icon">🐾</div>
         <h3>Pet Management</h3>
         <p>Store and manage pet profiles, owner details, and important veterinary information.</p>
     </div>
@@ -145,5 +80,72 @@
         <h3>Vaccination Tracking</h3>
         <p>Monitor vaccine schedules and upcoming due dates to keep pets safe and healthy.</p>
     </div>
+</section>
 
+<section id="services" class="home-service-row services-square-row">
+    <div class="home-service-card">
+        <div class="service-icon">🔬</div>
+        <h3>Laboratory Diagnosis</h3>
+        <p>Diagnostic tests to help identify pet health conditions accurately.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">🧫</div>
+        <h3>Direct Microscopy</h3>
+        <p>Microscope-based examination for quick laboratory findings.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">💩</div>
+        <h3>Stool Test</h3>
+        <p>Checks for parasites and digestive health concerns.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">🩸</div>
+        <h3>Microfilarial Test</h3>
+        <p>Screening test for blood parasites and heartworm-related concerns.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">🔎</div>
+        <h3>Vaginal Smear</h3>
+        <p>Reproductive health test for female pets.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">🧪</div>
+        <h3>Complete Blood Count</h3>
+        <p>Blood test used to evaluate overall pet health.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">🛍️</div>
+        <h3>Pet Shop Accessories</h3>
+        <p>Pet essentials, supplies, and accessories for daily care.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">💊</div>
+        <h3>Veterinary Pharmacy</h3>
+        <p>Clinic-provided medicines and health products.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">💉</div>
+        <h3>Vaccination and Deworming</h3>
+        <p>Preventive care to keep pets protected and healthy.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">🩺</div>
+        <h3>Veterinary Consultation</h3>
+        <p>Professional checkups and advice from the clinic team.</p>
+    </div>
+
+    <div class="home-service-card">
+        <div class="service-icon">✂️</div>
+        <h3>Grooming Services</h3>
+        <p>Basic grooming support to keep pets clean and comfortable.</p>
+    </div>
 </section>

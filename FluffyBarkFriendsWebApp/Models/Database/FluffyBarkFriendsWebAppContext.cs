@@ -149,6 +149,13 @@ public partial class FluffyBarkFriendsWebAppContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Weight).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.OwnerUserId);
+
+            entity.HasOne(d => d.OwnerUser)
+                .WithMany(p => p.Pets)
+                .HasForeignKey(d => d.OwnerUserId)
+                .HasConstraintName("FK_Pet_User");
+
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -168,6 +175,10 @@ public partial class FluffyBarkFriendsWebAppContext : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(30)
                 .IsUnicode(false);
+            entity.Property(e => e.Contact)
+               .HasMaxLength(50)
+               .IsUnicode(false);
+
         });
 
         modelBuilder.Entity<Vaccination>(entity =>

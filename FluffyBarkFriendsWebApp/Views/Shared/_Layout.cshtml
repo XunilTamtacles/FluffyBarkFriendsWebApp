@@ -1,20 +1,13 @@
-﻿@using System.Security.Claims
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
 
-    <title>
-        @ViewData["Title"] - Fluffy & BarkFriends
-    </title>
+    <title>@ViewData["Title"] - Fluffy & BarkFriends</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet"
-          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     <link rel="stylesheet"
           href="~/css/site.css"
@@ -22,207 +15,138 @@
 </head>
 
 <body>
-
     <header class="main-header">
-
         <nav class="navbar navbar-expand-lg">
-
-            <div class="container">
-
+            <div class="container-fluid px-4">
                 <a class="navbar-brand app-brand"
                    asp-controller="Home"
                    asp-action="Index">
-
                     <img src="~/images/fluffy-logo.png"
-                         alt="Fluffy & BarkFriends Logo"
+                         alt="Fluffy BarkFriends Logo"
                          class="brand-logo" />
 
                     <div class="brand-text">
                         <span class="brand-name">
                             Fluffy <span>&</span> BarkFriends
                         </span>
-
                         <span class="brand-subtitle">
                             Veterinary Clinic
                         </span>
                     </div>
-
                 </a>
 
                 <button class="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#navMenu">
-
+                        data-bs-target="#mainNav"
+                        aria-controls="mainNav"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
-
                 </button>
 
-                <div class="collapse navbar-collapse"
-                     id="navMenu">
-
-                    <ul class="navbar-nav mx-auto">
-
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Home"
-                               asp-action="About">
-                                About
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Home"
-                               asp-action="Contact">
-                                Contact
-                            </a>
-                        </li>
-
-                        @if (User.Identity?.IsAuthenticated == true)
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav mx-auto align-items-lg-center gap-lg-2">
+                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Client"))
                         {
-                            @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="DashBoard"
-                                       asp-action="Index">
-                                        Dashboard
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Appointment"
-                                       asp-action="Index">
-                                        Appointments
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link book-link" asp-controller="Appointment" asp-action="Book">Book Appointment</a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Pet"
-                                       asp-action="Index">
-                                        Pets
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link mypet-link" asp-controller="Pet" asp-action="Index">My Pet</a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="MedicalHistory"
-                                       asp-action="Index">
-                                        Medical History
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link appointment-link" asp-controller="Client" asp-action="MyAppointments">My Appointments</a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Vaccination"
-                                       asp-action="Index">
-                                        Vaccination
-                                    </a>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <a class="nav-link history-link" asp-controller="Client" asp-action="MyMedicalHistory">Medical History</a>
+                            </li>
 
-                            @if (User.IsInRole("Client"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Appointment"
-                                       asp-action="Book">
-                                        Book Appointment
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link vaccine-link" asp-controller="Client" asp-action="MyVaccinations">Vaccination</a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Client"
-                                       asp-action="MyPets">
-                                        My Pet
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Client"
-                                       asp-action="MyAppointments">
-                                        My Appointments
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Client"
-                                       asp-action="MyMedicalHistory">
-                                        Medical History
-                                    </a>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="Client"
-                                       asp-action="MyVaccinations">
-                                        Vaccination
-                                    </a>
-                                </li>
-                            }
-
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link"
-                                       asp-controller="User"
-                                       asp-action="Index">
-                                        Users
-                                    </a>
-                                </li>
-                            }
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a>
+                            </li>
                         }
+                        else if (User.Identity?.IsAuthenticated == true &&
+                                 (User.IsInRole("Admin") || User.IsInRole("Staff")))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="DashBoard" asp-action="Index">Dashboard</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Contact">Contact</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="/#services">Services</a>
+                            </li>
+                        }
                     </ul>
 
                     <div class="nav-right">
-
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <div class="profile-box">
+                            var profileName = string.IsNullOrWhiteSpace(User.Identity.Name)
+                                ? "User"
+                                : User.Identity.Name;
 
+                            var profileInitial = profileName.Substring(0, 1).ToUpper();
+
+                            <div class="profile-box">
                                 <div class="profile-icon">
-                                    👤
+                                    @profileInitial
                                 </div>
 
                                 <div class="profile-name">
-                                    @User.Identity.Name
+                                    @profileName
                                 </div>
-
                             </div>
+
+                            <a asp-controller="Account"
+                               asp-action="ChangePassword"
+                               class="btn change-password-btn">
+                                Change Password
+                            </a>
 
                             <form asp-controller="Account"
                                   asp-action="Logout"
                                   method="post"
                                   class="m-0">
-
                                 @Html.AntiForgeryToken()
 
-                                <button type="submit"
-                                        class="btn logout-btn">
+                                <button type="submit" class="btn logout-btn">
                                     Logout
                                 </button>
-
                             </form>
                         }
                         else
                         {
                             <div class="dropdown">
-
                                 <button class="btn login-dropdown-btn dropdown-toggle"
                                         type="button"
                                         data-bs-toggle="dropdown"
@@ -230,13 +154,12 @@
                                     Login
                                 </button>
 
-                                <ul class="dropdown-menu login-menu">
-
+                                <ul class="dropdown-menu dropdown-menu-end login-menu">
                                     <li>
                                         <a class="dropdown-item"
                                            asp-controller="Account"
                                            asp-action="Login">
-                                            🔐 Login
+                                            Login
                                         </a>
                                     </li>
 
@@ -244,23 +167,16 @@
                                         <a class="dropdown-item"
                                            asp-controller="Account"
                                            asp-action="Register">
-                                            📝 Register
+                                            Register
                                         </a>
                                     </li>
-
                                 </ul>
-
                             </div>
                         }
-
                     </div>
-
                 </div>
-
             </div>
-
         </nav>
-
     </header>
 
     <main>
@@ -270,7 +186,5 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
-
 </body>
-
 </html>

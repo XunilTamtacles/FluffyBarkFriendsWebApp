@@ -1,5 +1,4 @@
-﻿@using FluffyBarkFriendsWebApp.Models.ViewModels
-@model AppointmentFormsViewModel
+﻿@model FluffyBarkFriendsWebApp.Models.ViewModels.AppointmentFormsViewModel
 
 @{
     ViewData["Title"] = "Create Appointment";
@@ -11,27 +10,23 @@
     <p>Add a new appointment schedule for a pet visit.</p>
 </section>
 
-<div class="card border-0 shadow-sm rounded-4">
-    <div class="card-body p-4">
-        <form asp-action="Create" method="post">
-            @Html.AntiForgeryToken()
+<form asp-action="Create" method="post" class="page-panel">
+    @Html.AntiForgeryToken()
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            <partial name="_Form" model="Model" />
+    <partial name="_Form" model="Model" />
 
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-success rounded-pill px-4">
-                    Save Appointment
-                </button>
+    <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-success rounded-pill px-4">
+            Save Appointment
+        </button>
 
-                <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
-                    Back
-                </a>
-            </div>
-        </form>
+        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+            Back
+        </a>
     </div>
-</div>
+</form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

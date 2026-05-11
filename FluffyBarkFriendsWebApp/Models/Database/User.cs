@@ -11,6 +11,8 @@ public partial class User
 
     public string FullName { get; set; } = null!;
 
+    public string? Contact { get; set; }
+
     public string PasswordHash { get; set; } = null!;
 
     public string Role { get; set; } = null!;
@@ -22,4 +24,7 @@ public partial class User
     public virtual ICollection<Appointment> Appointment { get; set; } = new List<Appointment>();
 
     public virtual ICollection<Vaccination> VaccinationRecord { get; set; } = new List<Vaccination>();
+
+    public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
+
 }

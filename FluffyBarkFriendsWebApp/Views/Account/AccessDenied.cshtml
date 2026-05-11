@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<section class="page-panel">
+    <span class="eyebrow">Access Denied</span>
+
+    <h1>You do not have permission to access this page.</h1>
+
+    <p class="page-description">
+        Please login using an account with the correct role.
+    </p>
+
+    <div class="mt-4">
+        <a asp-controller="Account"
+           asp-action="Login"
+           class="btn btn-primary rounded-pill px-4">
+            Go to Login
+        </a>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-outline-primary rounded-pill px-4">
+            Back to Home
+        </a>
+    </div>
+</section>

@@ -1,60 +1,178 @@
-﻿@model List<FluffyBarkFriendsWebApp.Models.Database.Appointment>
+﻿@model IEnumerable<FluffyBarkFriendsWebApp.Models.Database.Appointment>
+@using FluffyBarkFriendsWebApp.Helpers
 
 @{
-    ViewData["Title"] = "Appointments";
+    ViewData["Title"] = User.IsInRole("Client") ? "My Appointments" : "Appointments";
+    var appointments = Model ?? Enumerable.Empty<FluffyBarkFriendsWebApp.Models.Database.Appointment>();
 }
 
-<section class="page-panel">
-    <span class="eyebrow">Clinic Schedule</span>
-    <h1>Appointments</h1>
-    <p>View and manage pet appointment schedules.</p>
-</section>
+<div class="container py-4">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success rounded-4">
+            @TempData["SuccessMessage"]
+        </div>
+    }
 
-<div class="mb-3">
-    <a asp-action="Create" class="btn btn-success rounded-pill px-4">
-        Create Appointment
-    </a>
-</div>
+    @if (User.IsInRole("Client") && appointments.Any(a => a.Status == "Confirmed"))
+    {
+        <div class="alert alert-info rounded-4">
+            You have confirmed appointment(s). Please check the status below.
+        </div>
+    }
 
-<div class="card border-0 shadow-sm rounded-4">
-    <div class="card-body p-4">
-        @if (Model.Any())
-        {
-            <table class="table align-middle">
-                <thead>
-                    <tr>
-                        <th>Pet</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Reason</th>
-                        <th>Status</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+    <div class="p-4 mb-4 rounded-4" style="background:#fff7ed;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <p class="text-uppercase fw-semibold text-muted mb-1">
+                    @(User.IsInRole("Client") ? "Client Portal" : "Clinic Schedule")
+                </p>
+
+                <h1 class="h3 mb-1">
+                    @(User.IsInRole("Client") ? "My Appointments" : "Appointments")
+                </h1>
+
+                <p class="mb-0 text-muted">
+                    @(User.IsInRole("Client")
+                        ? "Check if your appointment is Pending, Confirmed, Completed, or Cancelled."
+                        : "Manage pet visits, checkups, and follow-up schedules.")
+                </p>
+            </div>
+
+            <a asp-controller="Appointment"
+               asp-action="Create"
+               class="btn btn-success rounded-pill px-4">
+                Book Appointment
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
                         <tr>
-                            <td>@item.Pet?.PetName</td>
-                            <td>@item.AppointmentDate</td>
-                            <td>@item.AppointmentTime</td>
-                            <td>@item.ReasonVisit</td>
-                            <td>
-                                <span class="badge bg-success">@item.Status</span>
-                            </td>
-                            <td class="text-end">
-                                <a asp-action="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-success">Details</a>
-                                <a asp-action="Edit" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </td>
+                            <th>Pet</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Message</th>
+                            <th class="text-end">Actions</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p class="text-muted mb-0">No appointments found.</p>
-        }
+                    </thead>
+
+                    <tbody>
+                        @if (appointments.Any())
+                        {
+                            foreach (var appointment in appointments)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">
+                                        @(appointment.Pet?.PetName ?? "Pet #" + appointment.PetId)
+                                    </td>
+
+                                    <td>@appointment.AppointmentDate.ToString("MMM dd, yyyy")</td>
+
+                                    <td>@appointment.AppointmentTime.ToString("hh:mm tt")</td>
+
+                                    <td>@(appointment.ReasonVisit ?? "General visit")</td>
+
+                                    <td>
+                                        <span class="@StatusHelper.GetBootstrapBadgeClass(appointment.Status)">
+                                            @StatusHelper.DisplayStatusText(appointment.Status)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @if (appointment.Status == "Confirmed")
+                                        {
+                                            <span class="text-success fw-semibold">
+                                                Your appointment is confirmed.
+                                            </span>
+                                        }
+                                        else if (appointment.Status == "Pending")
+                                        {
+                                            <span class="text-warning fw-semibold">
+                                                Waiting for admin/staff approval.
+                                            </span>
+                                        }
+                                        else if (appointment.Status == "Cancelled")
+                                        {
+                                            <span class="text-danger fw-semibold">
+                                                Your appointment was cancelled.
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                @(appointment.Remarks ?? "-")
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td class="text-end">
+                                        <a asp-controller="Appointment"
+                                           asp-action="Details"
+                                           asp-route-id="@appointment.AppointmentId"
+                                           class="btn btn-sm btn-outline-secondary rounded-pill">
+                                            Details
+                                        </a>
+
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                                        {
+                                            @if (appointment.Status == "Pending")
+                                            {
+                                                <form asp-controller="Appointment"
+                                                      asp-action="Confirm"
+                                                      asp-route-id="@appointment.AppointmentId"
+                                                      method="post"
+                                                      class="d-inline">
+                                                    @Html.AntiForgeryToken()
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-success rounded-pill">
+                                                        Confirm
+                                                    </button>
+                                                </form>
+                                            }
+
+                                            <form asp-controller="Appointment"
+                                                  asp-action="Cancel"
+                                                  asp-route-id="@appointment.AppointmentId"
+                                                  method="post"
+                                                  class="d-inline">
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger rounded-pill">
+                                                    Cancel
+                                                </button>
+                                            </form>
+
+                                            <a asp-controller="Appointment"
+                                               asp-action="Edit"
+                                               asp-route-id="@appointment.AppointmentId"
+                                               class="btn btn-sm btn-outline-primary rounded-pill">
+                                                Edit
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    No appointments found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>

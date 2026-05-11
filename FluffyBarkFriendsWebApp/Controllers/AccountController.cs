@@ -122,7 +122,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
             var user = new User
             {
                 FullName = model.FullName.Trim(),
-                UserName = model.Username.Trim(),
+                UserName = model.UserName.Trim(),
+                Contact = model.Contact?.Trim(),
                 Role = role,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -142,6 +143,82 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
+        public IActionResult ForgotPassword()
+        {
+            return View(new ForgotPasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userService.GetByUsernameAsync(model.UserName.Trim());
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Username was not found.");
+                return View(model);
+            }
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
+
+            await _userService.UpdateAsync(user);
+
+            TempData["SuccessMessage"] = "Password reset successful. Please login using your new password.";
+
+            return RedirectToAction(nameof(Login));
+        }
+
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdValue, out int userId))
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var user = await _userService.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            if (!CheckPassword(user, model.CurrentPassword))
+            {
+                ModelState.AddModelError(nameof(model.CurrentPassword), "Current password is incorrect.");
+                return View(model);
+            }
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, model.NewPassword);
+
+            await _userService.UpdateAsync(user);
+
+            TempData["SuccessMessage"] = "Password changed successfully.";
+
+            return RedirectToAction(nameof(ChangePassword));
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -150,6 +227,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [AllowAnonymous]
         public IActionResult AccessDenied()
         {
             return View();

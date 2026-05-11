@@ -1,4 +1,5 @@
-﻿using FluffyBarkFriendsWebApp.Models.Database;
+﻿using System.Security.Claims;
+using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -16,18 +17,23 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _petService = petService;
         }
 
-
-
         public async Task<IActionResult> Index(string? searchTerm)
         {
             var pets = string.IsNullOrWhiteSpace(searchTerm)
                 ? await _petService.GetAllAsync()
                 : await _petService.SearchAsync(searchTerm);
 
+            if (User.IsInRole("Client"))
+            {
+                int userId = GetCurrentUserId();
+
+                pets = pets
+                    .Where(p => p.OwnerUserId == userId)
+                    .ToList();
+            }
+
             return View(pets);
         }
-
-
 
         public async Task<IActionResult> Details(int id)
         {
@@ -38,11 +44,14 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessPet(pet))
+            {
+                return Forbid();
+            }
+
             return View(pet);
         }
 
-
-        [Authorize(Roles = "Admin,Staff")]
         public IActionResult Create()
         {
             return View(new PetFormsViewModel());
@@ -50,7 +59,6 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(PetFormsViewModel model)
         {
             if (!ModelState.IsValid)
@@ -59,6 +67,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
 
             var pet = MapToPet(model);
+
+            if (User.IsInRole("Client"))
+            {
+                pet.OwnerUserId = GetCurrentUserId();
+            }
 
             try
             {
@@ -76,8 +89,6 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
-
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -87,6 +98,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessPet(pet))
+            {
+                return Forbid();
+            }
+
             var model = MapToPetFormsViewModel(pet);
 
             return View(model);
@@ -94,7 +110,6 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Edit(int id, PetFormsViewModel model)
         {
             if (id != model.PetId)
@@ -114,6 +129,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessPet(existingPet))
+            {
+                return Forbid();
+            }
+
             existingPet.PetName = model.PetName;
             existingPet.Species = model.Species;
             existingPet.Breed = model.Breed;
@@ -125,6 +145,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             existingPet.OwnerName = model.OwnerName;
             existingPet.ContactNumber = model.ContactNumber;
             existingPet.Notes = model.Notes;
+
+            if (User.IsInRole("Client"))
+            {
+                existingPet.OwnerUserId = GetCurrentUserId();
+            }
 
             try
             {
@@ -142,9 +167,6 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
-
-
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Delete(int id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -154,12 +176,16 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessPet(pet))
+            {
+                return Forbid();
+            }
+
             return View(pet);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var pet = await _petService.GetByIdAsync(id);
@@ -169,6 +195,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (!CanAccessPet(pet))
+            {
+                return Forbid();
+            }
+
             await _petService.DeleteAsync(id);
 
             TempData["SuccessMessage"] = "Pet successfully deleted.";
@@ -176,6 +207,32 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        private int GetCurrentUserId()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdValue, out int userId))
+            {
+                throw new InvalidOperationException("Logged-in user id was not found.");
+            }
+
+            return userId;
+        }
+
+        private bool CanAccessPet(Pet pet)
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+            {
+                return true;
+            }
+
+            if (User.IsInRole("Client"))
+            {
+                return pet.OwnerUserId == GetCurrentUserId();
+            }
+
+            return false;
+        }
 
         private static Pet MapToPet(PetFormsViewModel model)
         {
@@ -197,8 +254,6 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 CreatedAt = DateTime.Now
             };
         }
-
- 
 
         private static PetFormsViewModel MapToPetFormsViewModel(Pet pet)
         {

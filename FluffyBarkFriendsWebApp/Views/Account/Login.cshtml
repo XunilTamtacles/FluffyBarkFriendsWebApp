@@ -52,7 +52,7 @@
 
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-2">
 
                     <label asp-for="Password"
                            class="form-label">
@@ -68,6 +68,14 @@
                           class="text-danger">
                     </span>
 
+                </div>
+
+                <div class="text-end mb-3">
+                    <a asp-controller="Account"
+                       asp-action="ForgotPassword"
+                       class="forgot-password-link">
+                        Forgot password?
+                    </a>
                 </div>
 
                 <div class="form-check mb-4">
@@ -102,7 +110,6 @@
 
         </div>
 
-        
         <div class="login-image-section">
 
             <div class="orange-corner"></div>

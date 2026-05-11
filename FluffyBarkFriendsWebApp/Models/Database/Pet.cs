@@ -29,6 +29,11 @@ public partial class Pet
 
     public string? OwnerName { get; set; }
 
+    public int? OwnerUserId { get; set; }
+
+    public virtual User? OwnerUser { get; set; }
+
+
     public string? ContactNumber { get; set; }
 
     public string? Notes { get; set; }

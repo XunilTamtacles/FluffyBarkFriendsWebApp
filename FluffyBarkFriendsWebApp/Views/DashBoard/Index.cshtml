@@ -1,159 +1,500 @@
-﻿@{
-    ViewData["Title"] = "Home";
+﻿@model FluffyBarkFriendsWebApp.Models.ViewModels.DashBoardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var todayAppointments = Model.TodayAppointments ?? new();
+    var upcomingVaccinations = Model.UpcomingVaccinations ?? new();
 }
 
-<section class="pet-landing">
+<style>
+    .admin-body {
+        margin: 0;
+        background: #f5f9ff;
+    }
 
-    <div class="pet-landing-content">
+    .admin-shell {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 285px 1fr;
+        background: #f5f9ff;
+        color: #0b2545;
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
-        <div class="hero-logo-wrapper">
-            <img src="~/images/fluffy-logo.png"
-                 alt="Fluffy BarkFriends Logo"
-                 class="hero-logo" />
-        </div>
+    .admin-side {
+        background: #fff;
+        border-right: 1px solid #d8e6f5;
+        padding: 22px 14px;
+        display: flex;
+        flex-direction: column;
+    }
 
-        <span class="pet-kicker">
-            Veterinary Clinic System
-        </span>
+    .admin-brand {
+        text-align: center;
+        margin-bottom: 24px;
+    }
 
-        <h1>
-            We care about <br />
-            your pets
-        </h1>
+    .admin-paw {
+        font-size: 42px;
+        color: #1473e6;
+    }
 
-        <p>
-            Fluffy BarkFriends helps pet owners easily request appointments online while the clinic efficiently manages pet records, medical history, and vaccination schedules in one centralized veterinary system.
-        </p>
+    .admin-brand h2 {
+        margin: 4px 0 3px;
+        color: #1266d6;
+        font-size: 24px;
+        font-weight: 900;
+        line-height: 1;
+    }
 
-        <div class="pet-actions">
+        .admin-brand h2 span {
+            letter-spacing: 5px;
+            font-size: 14px;
+        }
 
-            <a asp-controller="Appointment"
-               asp-action="Book"
-               class="pet-main-btn">
-                📅 Book Appointment
-            </a>
+    .admin-brand p {
+        margin: 0;
+        font-size: 13px;
+        color: #40566f;
+    }
 
-            @if (User.Identity != null && User.Identity.IsAuthenticated)
-            {
-                @if (User.IsInRole("Admin"))
-                {
-                    <a asp-controller="DashBoard"
-                       asp-action="Index"
-                       class="pet-outline-btn">
-                        📊 Admin Dashboard
-                    </a>
-                }
-                else if (User.IsInRole("Staff"))
-                {
-                    <a asp-controller="DashBoard"
-                       asp-action="Index"
-                       class="pet-outline-btn">
-                        🩺 Staff Dashboard
-                    </a>
-                }
-                else
-                {
-                    <a asp-controller="Client"
-                       asp-action="Index"
-                       class="pet-outline-btn">
-                        🐾 My Portal
-                    </a>
-                }
+    .admin-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+        .admin-nav a,
+        .admin-logout {
+            display: block;
+            width: 100%;
+            text-align: left;
+            text-decoration: none;
+            color: #102a43;
+            padding: 13px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: 0;
+            background: transparent;
+        }
+
+            .admin-nav a.active,
+            .admin-nav a:hover,
+            .admin-logout:hover {
+                background: #d9ebff;
+                color: #006ee6;
             }
-            else
-            {
-                <a asp-controller="Account"
-                   asp-action="Login"
-                   class="pet-outline-btn">
-                    🔐 Login
-                </a>
+
+    .admin-side-art {
+        margin-top: auto;
+        text-align: center;
+        padding-bottom: 20px;
+    }
+
+        .admin-side-art img {
+            width: 215px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .admin-side-art p {
+            margin-top: 10px;
+            color: #17456f;
+            font-size: 14px;
+        }
+
+    .admin-content {
+        padding: 18px 36px 24px;
+    }
+
+    .admin-top {
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .admin-menu-btn {
+        border: 0;
+        background: transparent;
+        font-size: 28px;
+    }
+
+    .admin-search {
+        width: 440px;
+        max-width: 100%;
+        position: relative;
+    }
+
+        .admin-search input {
+            width: 100%;
+            border: 1px solid #d7e2f0;
+            border-radius: 9px;
+            padding: 13px 42px 13px 18px;
+            background: #fff;
+        }
+
+        .admin-search span {
+            position: absolute;
+            right: 14px;
+            top: 10px;
+        }
+
+    .admin-profile {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+        .admin-profile .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #e8f1ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-profile strong,
+        .admin-profile small {
+            display: block;
+        }
+
+    .admin-welcome {
+        min-height: 155px;
+        background: linear-gradient(90deg, #eaf4ff, #f7fbff);
+        border: 1px solid #d4e8ff;
+        border-radius: 12px;
+        padding: 30px 45px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        overflow: hidden;
+    }
+
+        .admin-welcome h1 {
+            font-size: 34px;
+            font-weight: 900;
+            color: #092b55;
+            margin: 0 0 8px;
+        }
+
+        .admin-welcome p {
+            font-size: 18px;
+            color: #0f2f57;
+            margin: 0;
+        }
+
+        .admin-welcome img {
+            max-height: 150px;
+            width: auto;
+        }
+
+    .admin-cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin: 20px 0;
+    }
+
+    .admin-card {
+        background: #fff;
+        border: 1px solid #dce7f4;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 8px 20px rgba(20, 70, 120, 0.05);
+    }
+
+        .admin-card span {
+            width: 58px;
+            height: 58px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            background: #e8f1ff;
+        }
+
+        .admin-card.green span {
+            background: #dcfce7;
+        }
+
+        .admin-card.orange span {
+            background: #fff0d0;
+        }
+
+        .admin-card.purple span {
+            background: #eee7ff;
+        }
+
+        .admin-card h3 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        .admin-card p {
+            margin: 0;
+            color: #172b4d;
+        }
+
+    .admin-layout-grid {
+        display: grid;
+        grid-template-columns: 2fr 1.2fr;
+        gap: 18px;
+    }
+
+    .admin-box {
+        background: #fff;
+        border: 1px solid #dce7f4;
+        border-radius: 12px;
+        padding: 18px;
+        box-shadow: 0 8px 20px rgba(20, 70, 120, 0.05);
+    }
+
+    .admin-large {
+        grid-row: span 2;
+    }
+
+    .admin-box-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 13px 10px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 14px;
+        }
+
+    .admin-status {
+        background: #fff1d6;
+        color: #c76a00;
+        padding: 6px 12px;
+        border-radius: 7px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+        .admin-actions a {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            background: #0d6efd;
+            padding: 13px 10px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+
+            .admin-actions a:nth-child(2) {
+                background: #12b76a;
             }
 
+            .admin-actions a:nth-child(3) {
+                background: #f59e0b;
+            }
+
+    .admin-status-list p,
+    .admin-note {
+        background: #f8fbff;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .dot {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+
+        .dot.blue {
+            background: #1976f3;
+        }
+
+        .dot.yellow {
+            background: #f59e0b;
+        }
+
+        .dot.green {
+            background: #2fbf71;
+        }
+
+        .dot.red {
+            background: #ef4444;
+        }
+</style>
+
+<div class="admin-shell">
+    <aside class="admin-side">
+        <div class="admin-brand">
+            <div class="admin-paw">🐾</div>
+            <h2>Fluffy & Bark<br /><span>FRIENDS</span></h2>
+            <p>Veterinary Clinic System</p>
         </div>
 
-    </div>
+        <nav class="admin-nav">
+            <a class="active" asp-controller="DashBoard" asp-action="Index">▦ Dashboard</a>
+            <a asp-controller="Appointment" asp-action="Index">📅 Appointment Management</a>
+            <a asp-controller="Pet" asp-action="Index">🐾 Pet Records</a>
+            <a asp-controller="MedicalHistory" asp-action="Index">📋 Medical History</a>
+            <a asp-controller="Vaccination" asp-action="Index">💉 Vaccination Records</a>
+            <a asp-controller="User" asp-action="Index">👥 User Management</a>
 
-    <div class="pet-landing-visual">
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="admin-logout">↪ Logout</button>
+            </form>
+        </nav>
 
-        <div class="pet-photo pet-photo-small">
-            <img src="~/images/vet-small.png"
-                 alt="Pet Checkup" />
+        <div class="admin-side-art">
+            <img src="~/images/pets.png" asp-append-version="true" alt="Dog and cat" />
+            <p>"Caring for pets,<br />serving with love."</p>
         </div>
+    </aside>
 
-        <div class="pet-photo pet-photo-main">
-            <img src="~/images/vet-main.png"
-                 alt="Veterinary Care" />
-        </div>
+    <main class="admin-content">
+        <header class="admin-top">
+            <button type="button" class="admin-menu-btn">☰</button>
 
-        <div class="paw-shape">
-            🐾
-        </div>
+            <div class="admin-search">
+                <input type="text" placeholder="Search pets, owners, appointments..." />
+                <span>🔍</span>
+            </div>
 
-    </div>
+            <div class="admin-profile">
+                <span>🔔</span>
+                <div class="avatar">👤</div>
+                <div>
+                    <strong>@User.Identity?.Name</strong>
+                    <small>Administrator</small>
+                </div>
+            </div>
+        </header>
 
-</section>
+        <section class="admin-welcome">
+            <div>
+                <h1>Welcome Back, Admin! 🐾</h1>
+                <p>Manage your veterinary clinic efficiently.</p>
+            </div>
 
-<section class="services-panel">
+            <img src="~/images/admin-hero-pets.png" asp-append-version="true" alt="Dog and cat" />
+        </section>
 
-    <div class="services-content">
+        <section class="admin-cards">
+            <div class="admin-card">
+                <span>🐾</span>
+                <div>
+                    <h3>@Model.ActivePetsCount</h3>
+                    <p>Total Pets</p>
+                </div>
+            </div>
 
-        <p class="eyebrow">
-            Clinic Offers
-        </p>
+            <div class="admin-card green">
+                <span>📅</span>
+                <div>
+                    <h3>@Model.TodayAppointmentsCount</h3>
+                    <p>Appointments Today</p>
+                </div>
+            </div>
 
-        <h2>
-            SERVICES
-        </h2>
+            <div class="admin-card orange">
+                <span>💉</span>
+                <div>
+                    <h3>@Model.UpcomingVaccinationsCount</h3>
+                    <p>Vaccinations Due</p>
+                </div>
+            </div>
 
-        <div class="services-grid">
+            <div class="admin-card purple">
+                <span>🩺</span>
+                <div>
+                    <h3>@Model.RecentMedicalCasesCount</h3>
+                    <p>Medical Records</p>
+                </div>
+            </div>
+        </section>
 
-            <ul>
-                <li>Laboratory Diagnosis</li>
-                <li>Direct Microscopy</li>
-                <li>Stool Test</li>
-                <li>Microfilarial Test</li>
-                <li>Vaginal Smear</li>
-                <li>Complete Blood Count (CBC)</li>
-            </ul>
+        <section class="admin-layout-grid">
+            <div class="admin-box admin-large">
+                <div class="admin-box-head">
+                    <h3>Recent Appointments</h3>
+                    <a asp-controller="Appointment" asp-action="Index">View All</a>
+                </div>
 
-            <ul>
-                <li>Pet Shop / Accessories</li>
-                <li>Veterinary Pharmacy</li>
-                <li>Vaccination and Deworming</li>
-                <li>Veterinary Consultation</li>
-                <li>Grooming Services</li>
-            </ul>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Pet Name</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
 
-        </div>
+                    <tbody>
+                        @foreach (var item in todayAppointments)
+                        {
+                            <tr>
+                                <td>@item.Pet?.PetName</td>
+                                <td>@item.AppointmentDate</td>
+                                <td>@item.AppointmentTime</td>
+                                <td><span class="admin-status">@item.Status</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
 
-    </div>
+                <div class="admin-actions">
+                    <a asp-controller="Appointment" asp-action="Create">📅 Add Appointment</a>
+                    <a asp-controller="Pet" asp-action="Create">🐾 Add Pet Record</a>
+                    <a asp-controller="Vaccination" asp-action="Create">💉 Add Vaccination</a>
+                </div>
+            </div>
 
-</section>
+            <div class="admin-box">
+                <h3>Appointment Status Overview</h3>
 
-<section class="home-service-row">
+                <div class="admin-status-list">
+                    <p><span class="dot blue"></span> Completed <strong>@Model.CompletedAppointmentsCount</strong></p>
+                    <p><span class="dot yellow"></span> Pending <strong>@Model.PendingAppointmentsCount</strong></p>
+                    <p><span class="dot green"></span> Confirmed <strong>@Model.ConfirmedAppointmentsCount</strong></p>
+                    <p><span class="dot red"></span> Cancelled <strong>@Model.CancelledAppointmentsCount</strong></p>
+                </div>
+            </div>
 
-    <div class="home-service-card">
-        <div class="service-icon">📅</div>
-        <h3>Appointment Booking</h3>
-        <p>Clients can request appointments online and receive clinic approval quickly and conveniently.</p>
-    </div>
+            <div class="admin-box">
+                <h3>Vaccination Alerts</h3>
 
-    <div class="home-service-card">
-        <div class="service-icon">🐶</div>
-        <h3>Pet Management</h3>
-        <p>Store and manage pet profiles, owner details, and important veterinary information.</p>
-    </div>
-
-    <div class="home-service-card">
-        <div class="service-icon">📋</div>
-        <h3>Medical History</h3>
-        <p>Track pet diagnoses, treatments, medications, and clinic visit history efficiently.</p>
-    </div>
-
-    <div class="home-service-card">
-        <div class="service-icon">💉</div>
-        <h3>Vaccination Tracking</h3>
-        <p>Monitor vaccine schedules and upcoming due dates to keep pets safe and healthy.</p>
-    </div>
-
-</section>
+                @foreach (var item in upcomingVaccinations)
+                {
+                    <p class="admin-note">💉 @item.Pet?.PetName - @item.VaccineName due @item.NextDueDate</p>
+                }
+            </div>
+        </section>
+    </main>
+</div>

@@ -18,8 +18,6 @@ body {
     overflow-x: hidden;
 }
 
-
-
 .main-header {
     background: rgba(237, 248, 255, 0.97);
     border-bottom: 1px solid #dceefa;
@@ -32,6 +30,17 @@ body {
 .navbar {
     padding: 12px 0;
 }
+
+.navbar-nav {
+    align-items: center;
+    gap: 10px;
+    list-style: none !important;
+    padding-left: 0 !important;
+}
+
+    .navbar-nav .nav-item::marker {
+        content: "" !important;
+    }
 
 .app-brand {
     display: flex;
@@ -74,11 +83,6 @@ body {
     margin-top: 4px;
 }
 
-.navbar-nav {
-    align-items: center;
-    gap: 10px;
-}
-
 .nav-link {
     color: var(--navy) !important;
     font-size: 15px;
@@ -100,8 +104,6 @@ body {
     align-items: center;
     gap: 12px;
 }
-
-
 
 .login-dropdown-btn {
     background: var(--navy);
@@ -137,8 +139,6 @@ body {
             background: #fff2df;
             color: var(--orange-red);
         }
-
-
 
 .profile-box {
     display: flex;
@@ -184,8 +184,6 @@ body {
         background: var(--navy);
         color: white;
     }
-
-
 
 .pet-landing {
     min-height: 620px;
@@ -251,8 +249,6 @@ body {
     color: #55606d;
 }
 
-
-
 .pet-actions {
     margin-top: 35px;
     display: flex;
@@ -297,8 +293,6 @@ body {
         color: white;
         transform: translateY(-3px);
     }
-
-
 
 .pet-landing-visual {
     position: relative;
@@ -375,46 +369,8 @@ body {
     z-index: 5;
 }
 
-
-
-.services-panel {
-    max-width: 1300px;
-    margin: 30px auto;
-    background: linear-gradient(135deg, #f8da59, #f7c742);
-    border-radius: 30px;
-    padding: 45px 55px;
-    box-shadow: 0 18px 40px rgba(11, 53, 81, 0.12);
-}
-
-.services-content h2 {
-    font-size: 46px;
-    font-weight: 900;
-    color: #111;
-    text-transform: uppercase;
-    margin-bottom: 25px;
-}
-
-.services-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 45px;
-}
-
-    .services-grid ul {
-        margin: 0;
-        padding-left: 25px;
-    }
-
-    .services-grid li {
-        font-size: 25px;
-        font-weight: 800;
-        color: #111;
-        margin-bottom: 14px;
-    }
-
-
-
-.home-service-row {
+.home-service-row,
+.services-square-grid {
     max-width: 1300px;
     margin: 30px auto 60px;
     display: grid;
@@ -422,10 +378,12 @@ body {
     gap: 24px;
 }
 
-.home-service-card {
+.home-service-card,
+.services-square-card {
     background: linear-gradient(135deg, #ffffff, #f3fbff);
     border-radius: 28px;
     padding: 30px;
+    min-height: 210px;
     box-shadow: 0 14px 36px rgba(11, 53, 81, 0.08);
     border: 2px solid #e1f4ff;
     transition: 0.3s ease;
@@ -433,7 +391,8 @@ body {
     overflow: hidden;
 }
 
-    .home-service-card::before {
+    .home-service-card::before,
+    .services-square-card::before {
         content: "";
         position: absolute;
         right: -50px;
@@ -444,13 +403,15 @@ body {
         border-radius: 50%;
     }
 
-    .home-service-card:hover {
+    .home-service-card:hover,
+    .services-square-card:hover {
         transform: translateY(-8px);
         box-shadow: 0 22px 45px rgba(11, 53, 81, 0.14);
         border-color: var(--sky);
     }
 
-.service-icon {
+.service-icon,
+.services-square-icon {
     width: 75px;
     height: 75px;
     background: linear-gradient(135deg, #eef9ff, #dff5ff);
@@ -464,23 +425,59 @@ body {
     z-index: 2;
 }
 
-.home-service-card h3 {
+.home-service-card h3,
+.services-square-card h3 {
     font-size: 24px;
     font-weight: 900;
     color: var(--navy);
     position: relative;
     z-index: 2;
+    margin: 0 0 12px;
 }
 
-.home-service-card p {
+.home-service-card p,
+.services-square-card p {
     color: #5e6670;
     font-size: 16px;
     line-height: 1.7;
     position: relative;
     z-index: 2;
+    margin: 0;
 }
 
+.services-square-section {
+    max-width: 1300px;
+    margin: 30px auto 70px;
+}
 
+.services-square-header {
+    margin-bottom: 28px;
+}
+
+    .services-square-header span {
+        color: var(--orange);
+        font-size: 14px;
+        font-weight: 900;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+    }
+
+    .services-square-header h2 {
+        color: var(--navy);
+        font-size: 46px;
+        font-weight: 900;
+        margin: 8px 0;
+    }
+
+    .services-square-header p {
+        color: #526173;
+        font-size: 18px;
+        margin: 0;
+    }
+
+.services-square-grid {
+    margin-top: 0;
+}
 
 .about-hero {
     max-width: 1300px;
@@ -572,8 +569,6 @@ body {
     box-shadow: 0 18px 40px rgba(11, 53, 81, 0.12);
 }
 
-
-
 .page-panel {
     max-width: 1300px;
     margin: 30px auto 60px;
@@ -608,8 +603,6 @@ body {
     color: #5e6670;
     line-height: 1.7;
 }
-
-
 
 .custom-table {
     border-collapse: separate;
@@ -651,8 +644,6 @@ body {
 .table-responsive {
     overflow-x: auto;
 }
-
-
 
 .login-wrapper,
 .register-wrapper {
@@ -778,10 +769,7 @@ body {
     z-index: 2;
 }
 
-
-
 @media (max-width: 991px) {
-
     .navbar {
         padding: 10px 0;
     }
@@ -852,27 +840,19 @@ body {
         right: 110px;
     }
 
-    .services-panel {
-        margin: 20px 14px;
-        padding: 30px 24px;
-    }
-
-    .services-grid,
+    .home-service-row,
+    .services-square-grid,
     .about-card-row {
         grid-template-columns: 1fr;
     }
 
-        .services-grid li {
-            font-size: 20px;
-        }
-
-    .services-content h2 {
-        font-size: 34px;
+    .home-service-row,
+    .services-square-section {
+        margin: 25px 14px 50px;
     }
 
-    .home-service-row {
-        grid-template-columns: 1fr;
-        margin: 25px 14px 50px;
+    .services-square-header h2 {
+        font-size: 34px;
     }
 
     .page-panel {
@@ -934,4 +914,305 @@ body {
     .register-big-logo {
         width: 320px;
     }
+    .appointment-modal-card {
+        max-width: 760px;
+        margin: 48px auto;
+        background: #ffffff;
+        border: 1px solid #d8dee6;
+        box-shadow: 0 18px 40px rgba(11, 53, 81, 0.16);
+    }
+
+    .appointment-modal-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid #e4e9ef;
+    }
+
+        .appointment-modal-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #343a40;
+            margin: 0;
+        }
+
+    .appointment-modal-body {
+        padding: 22px;
+    }
+
+    .appointment-schedule {
+        border-bottom: 1px solid #e4e9ef;
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+    }
+
+        .appointment-schedule span {
+            display: block;
+            font-size: 13px;
+            color: #7b838c;
+            font-weight: 800;
+        }
+
+        .appointment-schedule strong {
+            display: block;
+            margin-top: 4px;
+            padding-left: 16px;
+            color: #343a40;
+            font-size: 14px;
+        }
+
+    .appointment-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+    }
+
+    .appointment-section h3 {
+        font-size: 20px;
+        color: #7b838c;
+        font-weight: 700;
+        margin-bottom: 14px;
+    }
+
+    .appointment-field {
+        margin-bottom: 14px;
+    }
+
+        .appointment-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            color: #343a40;
+            margin-bottom: 6px;
+        }
+
+        .appointment-field input,
+        .appointment-field select,
+        .appointment-field textarea {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #cfd6de;
+            border-radius: 0;
+            background: transparent;
+            padding: 8px 10px;
+            color: #343a40;
+            outline: none;
+        }
+
+        .appointment-field textarea {
+            border: 1px solid #cfd6de;
+            resize: vertical;
+        }
+
+            .appointment-field input:focus,
+            .appointment-field select:focus,
+            .appointment-field textarea:focus {
+                border-color: #0d6efd;
+            }
+
+    .appointment-modal-footer {
+        border-top: 1px solid #e4e9ef;
+        padding: 14px 18px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .appointment-save-btn {
+        border: 0;
+        background: #0d6efd;
+        color: white;
+        padding: 9px 20px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+
+    .appointment-cancel-btn {
+        text-decoration: none;
+        background: #6c757d;
+        color: white;
+        padding: 9px 18px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+
+        .appointment-cancel-btn:hover {
+            color: white;
+            background: #5c636a;
+        }
+
+    @media (max-width: 768px) {
+        .appointment-modal-card {
+            margin: 24px 14px;
+        }
+
+        .appointment-form-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+    }
+    /* Change Password / Forgot Password */
+    .change-password-btn {
+        border: 2px solid var(--navy);
+        color: var(--navy);
+        background: white;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 900;
+        text-decoration: none;
+    }
+
+        .change-password-btn:hover {
+            background: var(--navy);
+            color: white;
+        }
+
+    .forgot-password-link {
+        color: var(--navy);
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+        .forgot-password-link:hover {
+            color: var(--orange-red);
+            text-decoration: underline;
+        }
+
+
+    /* Appointment Form Design */
+    .appointment-modal-card {
+        max-width: 760px;
+        margin: 48px auto;
+        background: #ffffff;
+        border: 1px solid #d8dee6;
+        box-shadow: 0 18px 40px rgba(11, 53, 81, 0.16);
+    }
+
+    .appointment-modal-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid #e4e9ef;
+    }
+
+        .appointment-modal-header h2 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #343a40;
+            margin: 0;
+        }
+
+    .appointment-modal-body {
+        padding: 22px;
+    }
+
+    .appointment-schedule {
+        border-bottom: 1px solid #e4e9ef;
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+    }
+
+        .appointment-schedule span {
+            display: block;
+            font-size: 13px;
+            color: #7b838c;
+            font-weight: 800;
+        }
+
+        .appointment-schedule strong {
+            display: block;
+            margin-top: 4px;
+            padding-left: 16px;
+            color: #343a40;
+            font-size: 14px;
+        }
+
+    .appointment-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+    }
+
+    .appointment-section h3 {
+        font-size: 20px;
+        color: #7b838c;
+        font-weight: 700;
+        margin-bottom: 14px;
+    }
+
+    .appointment-field {
+        margin-bottom: 14px;
+    }
+
+        .appointment-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            color: #343a40;
+            margin-bottom: 6px;
+        }
+
+        .appointment-field input,
+        .appointment-field select,
+        .appointment-field textarea {
+            width: 100%;
+            border: 0;
+            border-bottom: 1px solid #cfd6de;
+            border-radius: 0;
+            background: transparent;
+            padding: 8px 10px;
+            color: #343a40;
+            outline: none;
+        }
+
+        .appointment-field textarea {
+            border: 1px solid #cfd6de;
+            resize: vertical;
+        }
+
+            .appointment-field input:focus,
+            .appointment-field select:focus,
+            .appointment-field textarea:focus {
+                border-color: #0d6efd;
+            }
+
+    .appointment-modal-footer {
+        border-top: 1px solid #e4e9ef;
+        padding: 14px 18px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .appointment-save-btn {
+        border: 0;
+        background: #0d6efd;
+        color: white;
+        padding: 9px 20px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+
+    .appointment-cancel-btn {
+        text-decoration: none;
+        background: #6c757d;
+        color: white;
+        padding: 9px 18px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+
+        .appointment-cancel-btn:hover {
+            color: white;
+            background: #5c636a;
+        }
+
+    @media (max-width: 768px) {
+        .appointment-modal-card {
+            margin: 24px 14px;
+        }
+
+        .appointment-form-grid {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+    }
+
+
 }
