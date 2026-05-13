@@ -30,8 +30,10 @@ public partial class MedicalHistory
     public DateTime CreatedAt { get; set; }
 
     public bool IsDeleted { get; set; }
+    public bool IsSent { get; set; }
 
     public virtual Pet Pet { get; set; } = null!;
 
-    public virtual User RecordedByUser { get; set; } = null!;
+
+    public virtual User CreatedByUser { get; set; } = null!;
 }

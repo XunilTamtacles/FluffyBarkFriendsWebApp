@@ -39,28 +39,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             {
                 AppointmentDate = DateOnly.FromDateTime(DateTime.Today),
                 AppointmentTime = new TimeOnly(9, 0),
-                Status = "Pending",
+                Status = "Draft",
                 CreatedByUserId = GetCurrentUserId()
             };
 
             return View("Create", model);
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var appointment = await _appointmentService.GetByIdAsync(id);
-
-            if (appointment == null)
-            {
-                return NotFound();
-            }
-
-            if (!CanAccessAppointment(appointment))
-            {
-                return Forbid();
-            }
-
-            return View(appointment);
         }
 
         public IActionResult Create()
@@ -69,7 +52,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             {
                 AppointmentDate = DateOnly.FromDateTime(DateTime.Today),
                 AppointmentTime = new TimeOnly(9, 0),
-                Status = "Pending",
+                Status = "Draft",
                 CreatedByUserId = GetCurrentUserId()
             };
 
@@ -83,7 +66,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             if (User.IsInRole("Client"))
             {
                 model.CreatedByUserId = GetCurrentUserId();
-                model.Status = "Pending";
+                model.Status = "Draft";
             }
 
             if (!ModelState.IsValid)
@@ -107,6 +90,23 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
                 return View(model);
             }
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var appointment = await _appointmentService.GetByIdAsync(id);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            if (!CanAccessAppointment(appointment))
+            {
+                return Forbid();
+            }
+
+            return View(appointment);
         }
 
         [HttpPost]
@@ -222,6 +222,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var appointment = await _appointmentService.GetByIdAsync(id);
@@ -231,14 +232,10 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
-            if (!CanAccessAppointment(appointment))
-            {
-                return Forbid();
-            }
-
             return View(appointment);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -248,11 +245,6 @@ namespace FluffyBarkFriendsWebApp.Controllers
             if (appointment == null)
             {
                 return NotFound();
-            }
-
-            if (!CanAccessAppointment(appointment))
-            {
-                return Forbid();
             }
 
             await _appointmentService.DeleteAsync(id);

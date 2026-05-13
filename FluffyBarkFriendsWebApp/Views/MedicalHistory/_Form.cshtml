@@ -4,14 +4,10 @@
 
     <div class="col-md-6">
         <label asp-for="PetId" class="form-label"></label>
-        <input asp-for="PetId" class="form-control" placeholder="Enter Pet ID" />
+        <select asp-for="PetId" class="form-control" asp-items="ViewBag.Pets">
+            <option value="">-- Select Pet --</option>
+        </select>
         <span asp-validation-for="PetId" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6">
-        <label asp-for="CreatedByUserId" class="form-label"></label>
-        <input asp-for="CreatedByUserId" class="form-control" placeholder="Enter User ID" />
-        <span asp-validation-for="CreatedByUserId" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -29,26 +25,37 @@
     <div class="col-md-6">
         <label asp-for="Condition" class="form-label"></label>
         <input asp-for="Condition" class="form-control" placeholder="Condition" />
+        <span asp-validation-for="Condition" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="Diagnosis" class="form-label"></label>
         <input asp-for="Diagnosis" class="form-control" placeholder="Diagnosis" />
+        <span asp-validation-for="Diagnosis" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="Treatment" class="form-label"></label>
         <input asp-for="Treatment" class="form-control" placeholder="Treatment" />
+        <span asp-validation-for="Treatment" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Dosage" class="form-label"></label>
+        <input asp-for="Dosage" class="form-control" placeholder="Dosage" />
+        <span asp-validation-for="Dosage" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="Medication" class="form-label"></label>
         <input asp-for="Medication" class="form-control" placeholder="Medication" />
+        <span asp-validation-for="Medication" class="text-danger"></span>
     </div>
 
     <div class="col-12">
         <label asp-for="Notes" class="form-label"></label>
         <textarea asp-for="Notes" rows="3" class="form-control"></textarea>
+        <span asp-validation-for="Notes" class="text-danger"></span>
     </div>
 
-</div>
+</div>  

@@ -1,4 +1,5 @@
-﻿using FluffyBarkFriendsWebApp.Models.Database;
+﻿using System.Security.Claims;
+using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -26,14 +27,25 @@ namespace FluffyBarkFriendsWebApp.Controllers
             _vaccinationService = vaccinationService;
         }
 
-     
-
         public async Task<IActionResult> Index()
         {
-            var pets = await _petService.GetAllAsync();
-            var appointments = await _appointmentService.GetAllAsync();
-            var histories = await _medicalHistoryService.GetAllAsync();
-            var vaccinations = await _vaccinationService.GetAllAsync();
+            int userId = GetCurrentUserId();
+
+            var pets = (await _petService.GetAllAsync())
+                .Where(p => p.OwnerUserId == userId)
+                .ToList();
+
+            var appointments = (await _appointmentService.GetAllAsync())
+                .Where(a => a.CreatedByUserId == userId)
+                .ToList();
+
+            var histories = (await _medicalHistoryService.GetAllAsync())
+                .Where(h => h.Pet.OwnerUserId == userId)
+                .ToList();
+
+            var vaccinations = (await _vaccinationService.GetAllAsync())
+                .Where(v => v.Pet.OwnerUserId == userId)
+                .ToList();
 
             var model = new ClientPortalViewModel
             {
@@ -51,21 +63,21 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return View(model);
         }
 
-  
-
         public async Task<IActionResult> MyPet()
         {
-            var pets = await _petService.GetAllAsync();
+            int userId = GetCurrentUserId();
+
+            var pets = (await _petService.GetAllAsync())
+                .Where(p => p.OwnerUserId == userId)
+                .ToList();
+
             return View(pets);
         }
 
-        
         public IActionResult MyPets()
         {
             return RedirectToAction(nameof(MyPet));
         }
-
-       
 
         public IActionResult AddPet()
         {
@@ -81,6 +93,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return View(pet);
             }
 
+            pet.OwnerUserId = GetCurrentUserId();
             pet.IsActive = true;
             pet.CreatedAt = DateTime.Now;
 
@@ -91,18 +104,25 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return RedirectToAction(nameof(MyPet));
         }
 
-
         public async Task<IActionResult> MyAppointments()
         {
-            var appointments = await _appointmentService.GetAllAsync();
+            int userId = GetCurrentUserId();
+
+            var appointments = (await _appointmentService.GetAllAsync())
+                .Where(a => a.CreatedByUserId == userId)
+                .ToList();
+
             return View(appointments);
         }
 
-        
-
         public async Task<IActionResult> MedicalHistory()
         {
-            var histories = await _medicalHistoryService.GetAllAsync();
+            int userId = GetCurrentUserId();
+
+            var histories = (await _medicalHistoryService.GetAllAsync())
+                .Where(h => h.Pet.OwnerUserId == userId)
+                .ToList();
+
             return View(histories);
         }
 
@@ -111,18 +131,32 @@ namespace FluffyBarkFriendsWebApp.Controllers
             return RedirectToAction(nameof(MedicalHistory));
         }
 
-    
-
         public async Task<IActionResult> Vaccination()
         {
-            var vaccinations = await _vaccinationService.GetAllAsync();
+            int userId = GetCurrentUserId();
+
+            var vaccinations = (await _vaccinationService.GetAllAsync())
+                .Where(v => v.Pet.OwnerUserId == userId)
+                .ToList();
+
             return View(vaccinations);
         }
 
-        
         public IActionResult MyVaccinations()
         {
             return RedirectToAction(nameof(Vaccination));
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdValue, out int userId))
+            {
+                throw new InvalidOperationException("Logged-in user id was not found.");
+            }
+
+            return userId;
         }
     }
 }

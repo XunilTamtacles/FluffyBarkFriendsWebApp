@@ -17,7 +17,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         {
             return await _context.MedicalHistories
                 .Include(m => m.Pet)
-                .Include(m => m.RecordedByUser)
+                .Include(m => m.CreatedByUser)
                 .Where(m => !m.IsDeleted)
                 .OrderByDescending(m => m.VisitDate)
                 .ThenByDescending(m => m.VisitTime)
@@ -28,7 +28,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         {
             return await _context.MedicalHistories
                 .Include(m => m.Pet)
-                .Include(m => m.RecordedByUser)
+                .Include(m => m.CreatedByUser)
                 .FirstOrDefaultAsync(m => m.MedicalHistoryId == id && !m.IsDeleted);
         }
 
@@ -36,7 +36,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         {
             return await _context.MedicalHistories
                 .Include(m => m.Pet)
-                .Include(m => m.RecordedByUser)
+                .Include(m => m.CreatedByUser)
                 .Where(m => m.PetId == petId && !m.IsDeleted)
                 .OrderByDescending(m => m.VisitDate)
                 .ToListAsync();
@@ -51,7 +51,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
             return await _context.MedicalHistories
                 .Include(m => m.Pet)
-                .Include(m => m.RecordedByUser)
+                .Include(m => m.CreatedByUser)
                 .Where(m => !m.IsDeleted &&
                             m.Diagnosis != null &&
                             m.Diagnosis.Contains(keyword))
@@ -63,7 +63,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         {
             return await _context.MedicalHistories
                 .Include(m => m.Pet)
-                .Include(m => m.RecordedByUser)
+                .Include(m => m.CreatedByUser)
                 .Where(m => !m.IsDeleted &&
                             m.VisitDate >= start &&
                             m.VisitDate <= end)
@@ -78,7 +78,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
             return await _context.MedicalHistories
                 .Include(m => m.Pet)
-                .Include(m => m.RecordedByUser)
+                .Include(m => m.CreatedByUser)
                 .Where(m => !m.IsDeleted &&
                             m.VisitDate >= last7Days)
                 .OrderByDescending(m => m.VisitDate)

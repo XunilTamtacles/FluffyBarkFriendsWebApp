@@ -21,10 +21,11 @@ public partial class User
 
     public DateTime CreatedAt { get; set; }
 
-    public virtual ICollection<Appointment> Appointment { get; set; } = new List<Appointment>();
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
-    public virtual ICollection<Vaccination> VaccinationRecord { get; set; } = new List<Vaccination>();
+    public virtual ICollection<MedicalHistory> MedicalHistories { get; set; } = new List<MedicalHistory>();
 
     public virtual ICollection<Pet> Pets { get; set; } = new List<Pet>();
 
+    public virtual ICollection<Vaccination> Vaccinations { get; set; } = new List<Vaccination>();
 }

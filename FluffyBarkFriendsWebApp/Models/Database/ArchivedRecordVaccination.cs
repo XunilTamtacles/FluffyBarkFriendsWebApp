@@ -28,5 +28,4 @@ public partial class ArchivedRecordVaccination
     public DateTime OriginalCreatedAt { get; set; }
 
     public DateTime ArchivedAt { get; set; }
-
 }

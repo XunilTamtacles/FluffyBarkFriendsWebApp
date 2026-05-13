@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
-
 
 namespace FluffyBarkFriendsWebApp.Controllers
 {
@@ -20,6 +20,17 @@ namespace FluffyBarkFriendsWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             var vaccinations = await _vaccinationService.GetAllAsync();
+
+            if (User.IsInRole("Client"))
+            {
+                int userId = GetCurrentUserId();
+
+                vaccinations = vaccinations
+                    .Where(v => v.IsSent &&
+                                v.Pet.OwnerUserId == userId)
+                    .ToList();
+            }
+
             return View(vaccinations);
         }
 
@@ -30,6 +41,12 @@ namespace FluffyBarkFriendsWebApp.Controllers
             if (vaccination == null)
             {
                 return NotFound();
+            }
+
+            if (User.IsInRole("Client") &&
+                (!vaccination.IsSent || vaccination.Pet.OwnerUserId != GetCurrentUserId()))
+            {
+                return Forbid();
             }
 
             return View(vaccination);
@@ -52,6 +69,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(VaccinationRecordFormsViewModel model)
         {
+            model.RecordedByUserId = GetCurrentUserId();
+
             if (model.NextDueDate.HasValue &&
                 model.NextDueDate.Value < model.DateGiven)
             {
@@ -76,12 +95,34 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 Remarks = model.Remarks,
                 RecordedByUserId = model.RecordedByUserId,
                 CreatedAt = DateTime.Now,
-                IsDeleted = false
+                IsDeleted = false,
+                IsSent = false
             };
 
             await _vaccinationService.CreateAsync(vaccination);
 
-            TempData["SuccessMessage"] = "Vaccination record successfully added.";
+            TempData["SuccessMessage"] = "Vaccination record saved. Click Send Record to send it to the client.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> SendRecord(int id)
+        {
+            var vaccination = await _vaccinationService.GetByIdAsync(id);
+
+            if (vaccination == null)
+            {
+                return NotFound();
+            }
+
+            vaccination.IsSent = true;
+
+            await _vaccinationService.UpdateAsync(vaccination);
+
+            TempData["SuccessMessage"] = "Vaccination record sent to client.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -115,12 +156,14 @@ namespace FluffyBarkFriendsWebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> Edit(int id, VaccinationRecordFormsViewModel model)
+        public async Task<IActionResult> Edit(int id, VaccinationRecordFormsViewModel model, int appointmentId)
         {
             if (id != model.VaccinationId)
             {
                 return NotFound();
             }
+
+            model.RecordedByUserId = GetCurrentUserId();
 
             if (model.NextDueDate.HasValue &&
                 model.NextDueDate.Value < model.DateGiven)
@@ -143,7 +186,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             }
 
             vaccination.PetId = model.PetId;
-            vaccination.AppointmentId = (int)model.AppointmentId;
+            vaccination.AppointmentId = appointmentId;
             vaccination.VaccineName = model.VaccineName;
             vaccination.DateGiven = model.DateGiven;
             vaccination.NextDueDate = model.NextDueDate;
@@ -188,6 +231,18 @@ namespace FluffyBarkFriendsWebApp.Controllers
             TempData["SuccessMessage"] = "Vaccination record successfully deleted.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdValue, out int userId))
+            {
+                throw new InvalidOperationException("Logged-in user id was not found.");
+            }
+
+            return userId;
         }
     }
 }

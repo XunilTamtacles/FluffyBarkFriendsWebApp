@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using FluffyBarkFriendsWebApp.Models.Database;
 using FluffyBarkFriendsWebApp.Models.ViewModels;
 using FluffyBarkFriendsWebApp.Views.Service.Interface;
@@ -10,15 +12,30 @@ namespace FluffyBarkFriendsWebApp.Controllers
     public class MedicalHistoryController : Controller
     {
         private readonly IMedicalHistoryService _medicalHistoryService;
+        private readonly IPetService _petService;
 
-        public MedicalHistoryController(IMedicalHistoryService medicalHistoryService)
+        public MedicalHistoryController(
+            IMedicalHistoryService medicalHistoryService,
+            IPetService petService)
         {
             _medicalHistoryService = medicalHistoryService;
+            _petService = petService;
         }
 
         public async Task<IActionResult> Index()
         {
             var histories = await _medicalHistoryService.GetAllAsync();
+
+            if (User.IsInRole("Client"))
+            {
+                int userId = GetCurrentUserId();
+
+                histories = histories
+                    .Where(h => h.IsSent &&
+                                h.Pet.OwnerUserId == userId)
+                    .ToList();
+            }
+
             return View(histories);
         }
 
@@ -31,12 +48,20 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            if (User.IsInRole("Client") &&
+                (!history.IsSent || history.Pet.OwnerUserId != GetCurrentUserId()))
+            {
+                return Forbid();
+            }
+
             return View(history);
         }
 
         [Authorize(Roles = "Admin,Staff")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            await LoadPetsAsync();
+
             return View(new MedicalHistoryFormsViewModel
             {
                 VisitDate = DateOnly.FromDateTime(DateTime.Today),
@@ -49,8 +74,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> Create(MedicalHistoryFormsViewModel model)
         {
+            model.CreatedByUserId = GetCurrentUserId();
+
             if (!ModelState.IsValid)
             {
+                await LoadPetsAsync();
                 return View(model);
             }
 
@@ -59,14 +87,39 @@ namespace FluffyBarkFriendsWebApp.Controllers
             try
             {
                 await _medicalHistoryService.CreateAsync(history);
-                TempData["SuccessMessage"] = "Medical history added successfully.";
+
+                TempData["SuccessMessage"] = "Medical history saved. Click Send Record to send it to the client.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
+                await LoadPetsAsync();
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,Staff")]
+        public async Task<IActionResult> SendRecord(int id)
+        {
+            var history = await _medicalHistoryService.GetByIdAsync(id);
+
+            if (history == null)
+            {
+                return NotFound();
+            }
+
+            history.IsSent = true;
+
+            await _medicalHistoryService.UpdateAsync(history);
+
+            TempData["SuccessMessage"] = "Medical record sent to client.";
+
+            return RedirectToAction(nameof(Index));
         }
 
         [Authorize(Roles = "Admin,Staff")]
@@ -79,7 +132,10 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            await LoadPetsAsync();
+
             var model = MapToMedicalHistoryFormsViewModel(history);
+
             return View(model);
         }
 
@@ -93,8 +149,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 return NotFound();
             }
 
+            model.CreatedByUserId = GetCurrentUserId();
+
             if (!ModelState.IsValid)
             {
+                await LoadPetsAsync();
                 return View(model);
             }
 
@@ -114,17 +173,20 @@ namespace FluffyBarkFriendsWebApp.Controllers
             existingHistory.Dosage = model.Dosage ?? string.Empty;
             existingHistory.Notes = model.Notes ?? string.Empty;
             existingHistory.Medication = model.Medication ?? string.Empty;
-            existingHistory.CreatedByUserId = model.CreatedByUserId;
 
             try
             {
                 await _medicalHistoryService.UpdateAsync(existingHistory);
+
                 TempData["SuccessMessage"] = "Medical history updated successfully.";
+
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
+                await LoadPetsAsync();
                 ModelState.AddModelError(string.Empty, ex.Message);
+
                 return View(model);
             }
         }
@@ -147,17 +209,37 @@ namespace FluffyBarkFriendsWebApp.Controllers
         [Authorize(Roles = "Admin,Staff")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var history = await _medicalHistoryService.GetByIdAsync(id);
-
-            if (history == null)
-            {
-                return NotFound();
-            }
-
             await _medicalHistoryService.DeleteAsync(id);
+
             TempData["SuccessMessage"] = "Medical history deleted successfully.";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private async Task LoadPetsAsync()
+        {
+            var pets = await _petService.GetAllAsync();
+
+            ViewBag.Pets = pets
+                .Where(p => p.IsActive)
+                .Select(p => new SelectListItem
+                {
+                    Value = p.PetId.ToString(),
+                    Text = p.PetName + " - " + (p.OwnerName ?? "No Owner")
+                })
+                .ToList();
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(userIdValue, out int userId))
+            {
+                throw new InvalidOperationException("Logged-in user id was not found.");
+            }
+
+            return userId;
         }
 
         private static MedicalHistory MapToMedicalHistory(MedicalHistoryFormsViewModel model)
@@ -176,7 +258,8 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 Medication = model.Medication ?? string.Empty,
                 CreatedByUserId = model.CreatedByUserId,
                 CreatedAt = DateTime.Now,
-                IsDeleted = false
+                IsDeleted = false,
+                IsSent = false
             };
         }
 

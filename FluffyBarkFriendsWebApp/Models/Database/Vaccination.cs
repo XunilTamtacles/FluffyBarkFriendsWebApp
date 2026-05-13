@@ -27,10 +27,11 @@ public partial class Vaccination
 
     public bool IsDeleted { get; set; }
 
+    public bool IsSent { get; set; }
+
+    public virtual Appointment Appointment { get; set; } = null!;
+
     public virtual Pet Pet { get; set; } = null!;
 
-    public virtual Appointment? Appointment { get; set; }
-
     public virtual User RecordedByUser { get; set; } = null!;
-
 }

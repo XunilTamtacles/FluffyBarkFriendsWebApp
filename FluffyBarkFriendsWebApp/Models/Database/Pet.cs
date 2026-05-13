@@ -31,14 +31,15 @@ public partial class Pet
 
     public int? OwnerUserId { get; set; }
 
-    public virtual User? OwnerUser { get; set; }
-
-
     public string? ContactNumber { get; set; }
 
     public string? Notes { get; set; }
 
-    public virtual ICollection<Appointment> Appointment { get; set; } = new List<Appointment>();
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
-    public virtual ICollection<Vaccination> VaccinationRecord { get; set; } = new List<Vaccination>();
+    public virtual ICollection<MedicalHistory> MedicalHistories { get; set; } = new List<MedicalHistory>();
+
+    public virtual User? OwnerUser { get; set; }
+
+    public virtual ICollection<Vaccination> Vaccinations { get; set; } = new List<Vaccination>();
 }
