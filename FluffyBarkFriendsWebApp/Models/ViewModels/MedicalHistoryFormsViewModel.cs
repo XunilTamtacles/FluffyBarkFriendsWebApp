@@ -30,13 +30,13 @@ namespace FluffyBarkFriendsWebApp.Models.ViewModels
         [StringLength(100)]
         public string? Dosage { get; set; }
 
-
         [StringLength(100)]
         public string? Medication { get; set; }
 
-        [Required(ErrorMessage = "Created by user is required.")]
+       
+        public string? Notes { get; set; }
+
         [Display(Name = "Created By User")]
         public int CreatedByUserId { get; set; }
-        public string Notes { get; internal set; }
     }
 }

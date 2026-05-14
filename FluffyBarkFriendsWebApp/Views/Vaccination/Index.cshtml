@@ -36,6 +36,7 @@
                             <th>Dose</th>
                             <th>Date Given</th>
                             <th>Next Due</th>
+                            <th>Notes</th>
                             <th>Status</th>
                             <th class="text-end">Actions</th>
                         </tr>
@@ -54,6 +55,8 @@
                                 <td>@item.Dose</td>
                                 <td>@item.DateGiven</td>
                                 <td>@item.NextDueDate</td>
+                                <td>@item.Notes</td>
+
                                 <td>
                                     @if (isOverdue)
                                     {
@@ -68,6 +71,7 @@
                                         <span class="badge rounded-pill bg-secondary">No Due Date</span>
                                     }
                                 </td>
+
                                 <td class="text-end">
                                     <a asp-action="Details"
                                        asp-route-id="@item.VaccinationId"

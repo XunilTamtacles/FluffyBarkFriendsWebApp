@@ -27,6 +27,7 @@
                 <th>Diagnosis</th>
                 <th>Treatment</th>
                 <th>Medication</th>
+                <th>Notes</th>
                 <th>Status</th>
 
                 @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
@@ -37,63 +38,75 @@
         </thead>
 
         <tbody>
-            @foreach (var item in Model)
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Pet?.PetName</td>
+                        <td>@item.VisitDate.ToString("MM/dd/yyyy")</td>
+                        <td>@item.Condition</td>
+                        <td>@item.Diagnosis</td>
+                        <td>@item.Treatment</td>
+                        <td>@item.Medication</td>
+                        <td>@item.Notes</td>
+
+                        <td>
+                            @if (item.IsSent)
+                            {
+                                <span class="badge bg-success">Sent</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Not Sent</span>
+                            }
+                        </td>
+
+                        @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                        {
+                            <td>
+                                <a asp-action="Details"
+                                   asp-route-id="@item.MedicalHistoryId"
+                                   class="btn btn-outline-secondary btn-sm">
+                                    Details
+                                </a>
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@item.MedicalHistoryId"
+                                   class="btn btn-outline-primary btn-sm">
+                                    Edit
+                                </a>
+
+                                @if (!item.IsSent)
+                                {
+                                    <form asp-action="SendRecord"
+                                          asp-route-id="@item.MedicalHistoryId"
+                                          method="post"
+                                          style="display:inline;">
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Send Record
+                                        </button>
+                                    </form>
+                                }
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@item.MedicalHistoryId"
+                                   class="btn btn-outline-danger btn-sm">
+                                    Delete
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else
             {
                 <tr>
-                    <td>@item.Pet?.PetName</td>
-                    <td>@item.VisitDate</td>
-                    <td>@item.Condition</td>
-                    <td>@item.Diagnosis</td>
-                    <td>@item.Treatment</td>
-                    <td>@item.Medication</td>
-
-                    <td>
-                        @if (item.IsSent)
-                        {
-                            <span class="badge bg-success">Sent</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Not Sent</span>
-                        }
+                    <td colspan="9" class="text-center text-muted">
+                        No medical history records found.
                     </td>
-
-                    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
-                    {
-                        <td>
-                            <a asp-action="Details"
-                               asp-route-id="@item.MedicalHistoryId"
-                               class="btn btn-outline-secondary btn-sm">
-                                Details
-                            </a>
-
-                            <a asp-action="Edit"
-                               asp-route-id="@item.MedicalHistoryId"
-                               class="btn btn-outline-primary btn-sm">
-                                Edit
-                            </a>
-
-                            @if (!item.IsSent)
-                            {
-                                <form asp-action="SendRecord"
-                                      asp-route-id="@item.MedicalHistoryId"
-                                      method="post"
-                                      style="display:inline;">
-                                    @Html.AntiForgeryToken()
-
-                                    <button type="submit" class="btn btn-success btn-sm">
-                                        Send Record
-                                    </button>
-                                </form>
-                            }
-
-                            <a asp-action="Delete"
-                               asp-route-id="@item.MedicalHistoryId"
-                               class="btn btn-outline-danger btn-sm">
-                                Delete
-                            </a>
-                        </td>
-                    }
                 </tr>
             }
         </tbody>

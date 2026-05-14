@@ -7,7 +7,9 @@
 
 <section class="page-panel">
     <span class="eyebrow">Medical History</span>
+
     <h1>Create Medical Record</h1>
+
     <p>Add a new medical record for a pet.</p>
 </section>
 
@@ -19,17 +21,30 @@
             @Html.AntiForgeryToken()
 
             <div asp-validation-summary="ModelOnly"
-                 class="text-danger mb-3"></div>
+                 class="text-danger mb-3">
+            </div>
 
             <partial name="_Form" model="Model" />
 
             <div class="mt-4 d-flex gap-2">
 
+                
                 <button type="submit"
+                        name="submitAction"
+                        value="save"
                         class="btn btn-success rounded-pill px-4">
                     Save Record
                 </button>
 
+               
+                <button type="submit"
+                        name="submitAction"
+                        value="send"
+                        class="btn btn-primary rounded-pill px-4">
+                    Send Record
+                </button>
+
+                
                 <a asp-action="Index"
                    class="btn btn-outline-secondary rounded-pill px-4">
                     Back

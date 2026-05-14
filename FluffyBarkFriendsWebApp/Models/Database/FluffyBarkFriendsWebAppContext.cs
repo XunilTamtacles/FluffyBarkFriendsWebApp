@@ -36,7 +36,7 @@ public partial class FluffyBarkFriendsWebAppContext : DbContext
             entity.Property(e => e.Diagnosis).HasMaxLength(100).IsUnicode(false);
             entity.Property(e => e.Dosage).HasMaxLength(100).IsUnicode(false);
             entity.Property(e => e.Medication).HasMaxLength(100).IsUnicode(false);
-            entity.Property(e => e.Notes).HasMaxLength(100).IsUnicode(false);
+            entity.Property(e => e.Notes).HasColumnType("nvarchar(max)");
             entity.Property(e => e.Treatment).HasMaxLength(100).IsUnicode(false);
             entity.Property(e => e.VisitTime).HasPrecision(0);
 

@@ -29,6 +29,8 @@ public partial class Vaccination
 
     public bool IsSent { get; set; }
 
+    public string? Notes { get; set; }
+
     public virtual Appointment Appointment { get; set; } = null!;
 
     public virtual Pet Pet { get; set; } = null!;

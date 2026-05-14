@@ -32,6 +32,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
                 histories = histories
                     .Where(h => h.IsSent &&
+                                h.Pet != null &&
                                 h.Pet.OwnerUserId == userId)
                     .ToList();
             }
@@ -44,12 +45,12 @@ namespace FluffyBarkFriendsWebApp.Controllers
             var history = await _medicalHistoryService.GetByIdAsync(id);
 
             if (history == null)
-            {
                 return NotFound();
-            }
 
             if (User.IsInRole("Client") &&
-                (!history.IsSent || history.Pet.OwnerUserId != GetCurrentUserId()))
+                (!history.IsSent ||
+                 history.Pet == null ||
+                 history.Pet.OwnerUserId != GetCurrentUserId()))
             {
                 return Forbid();
             }
@@ -72,9 +73,14 @@ namespace FluffyBarkFriendsWebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Staff")]
-        public async Task<IActionResult> Create(MedicalHistoryFormsViewModel model)
+        public async Task<IActionResult> Create(MedicalHistoryFormsViewModel model, string submitAction)
         {
             model.CreatedByUserId = GetCurrentUserId();
+
+            if (model.PetId <= 0)
+            {
+                ModelState.AddModelError(nameof(model.PetId), "Please select a pet.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -84,21 +90,15 @@ namespace FluffyBarkFriendsWebApp.Controllers
 
             var history = MapToMedicalHistory(model);
 
-            try
-            {
-                await _medicalHistoryService.CreateAsync(history);
+            history.IsSent = submitAction == "send";
 
-                TempData["SuccessMessage"] = "Medical history saved. Click Send Record to send it to the client.";
+            await _medicalHistoryService.CreateAsync(history);
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                await LoadPetsAsync();
-                ModelState.AddModelError(string.Empty, ex.Message);
+            TempData["SuccessMessage"] = history.IsSent
+                ? "Medical record saved and sent to client."
+                : "Medical record saved as draft.";
 
-                return View(model);
-            }
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
@@ -109,9 +109,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             var history = await _medicalHistoryService.GetByIdAsync(id);
 
             if (history == null)
-            {
                 return NotFound();
-            }
 
             history.IsSent = true;
 
@@ -128,15 +126,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             var history = await _medicalHistoryService.GetByIdAsync(id);
 
             if (history == null)
-            {
                 return NotFound();
-            }
 
             await LoadPetsAsync();
 
-            var model = MapToMedicalHistoryFormsViewModel(history);
-
-            return View(model);
+            return View(MapToMedicalHistoryFormsViewModel(history));
         }
 
         [HttpPost]
@@ -145,11 +139,12 @@ namespace FluffyBarkFriendsWebApp.Controllers
         public async Task<IActionResult> Edit(int id, MedicalHistoryFormsViewModel model)
         {
             if (id != model.MedicalHistoryId)
-            {
                 return NotFound();
-            }
 
-            model.CreatedByUserId = GetCurrentUserId();
+            if (model.PetId <= 0)
+            {
+                ModelState.AddModelError(nameof(model.PetId), "Please select a pet.");
+            }
 
             if (!ModelState.IsValid)
             {
@@ -160,9 +155,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             var existingHistory = await _medicalHistoryService.GetByIdAsync(id);
 
             if (existingHistory == null)
-            {
                 return NotFound();
-            }
 
             existingHistory.PetId = model.PetId;
             existingHistory.VisitDate = model.VisitDate;
@@ -174,21 +167,11 @@ namespace FluffyBarkFriendsWebApp.Controllers
             existingHistory.Notes = model.Notes ?? string.Empty;
             existingHistory.Medication = model.Medication ?? string.Empty;
 
-            try
-            {
-                await _medicalHistoryService.UpdateAsync(existingHistory);
+            await _medicalHistoryService.UpdateAsync(existingHistory);
 
-                TempData["SuccessMessage"] = "Medical history updated successfully.";
+            TempData["SuccessMessage"] = "Medical history updated successfully.";
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                await LoadPetsAsync();
-                ModelState.AddModelError(string.Empty, ex.Message);
-
-                return View(model);
-            }
+            return RedirectToAction(nameof(Index));
         }
 
         [Authorize(Roles = "Admin,Staff")]
@@ -197,9 +180,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             var history = await _medicalHistoryService.GetByIdAsync(id);
 
             if (history == null)
-            {
                 return NotFound();
-            }
 
             return View(history);
         }
@@ -225,7 +206,10 @@ namespace FluffyBarkFriendsWebApp.Controllers
                 .Select(p => new SelectListItem
                 {
                     Value = p.PetId.ToString(),
-                    Text = p.PetName + " - " + (p.OwnerName ?? "No Owner")
+                    Text = p.PetName + " - " +
+                           (p.OwnerUser != null
+                                ? p.OwnerUser.FullName
+                                : (p.OwnerName ?? "No Owner"))
                 })
                 .ToList();
         }
@@ -235,9 +219,7 @@ namespace FluffyBarkFriendsWebApp.Controllers
             var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!int.TryParse(userIdValue, out int userId))
-            {
                 throw new InvalidOperationException("Logged-in user id was not found.");
-            }
 
             return userId;
         }
