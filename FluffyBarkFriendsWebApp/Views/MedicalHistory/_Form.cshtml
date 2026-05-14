@@ -1,61 +1,51 @@
-﻿@model FluffyBarkFriendsWebApp.Models.ViewModels.MedicalHistoryFormsViewModel
+﻿@using FluffyBarkFriendsWebApp.Models.ViewModels
+@model MedicalHistoryFormsViewModel
 
-<div class="row g-3">
+@{
+    ViewData["Title"] = "Create Medical History Record";
+}
 
-    <div class="col-md-6">
-        <label asp-for="PetId" class="form-label"></label>
-        <select asp-for="PetId" class="form-control" asp-items="ViewBag.Pets">
-            <option value="">-- Select Pet --</option>
-        </select>
-        <span asp-validation-for="PetId" class="text-danger"></span>
-    </div>
+<section class="page-panel">
+    <span class="eyebrow">Medical History</span>
+    <h1>Create Medical Record</h1>
+    <p>Add a new medical record for a pet.</p>
+</section>
 
-    <div class="col-md-6">
-        <label asp-for="VisitDate" class="form-label"></label>
-        <input asp-for="VisitDate" type="date" class="form-control" />
-        <span asp-validation-for="VisitDate" class="text-danger"></span>
-    </div>
+<div class="medical-history-card">
+    <form asp-action="Create" method="post">
 
-    <div class="col-md-6">
-        <label asp-for="VisitTime" class="form-label"></label>
-        <input asp-for="VisitTime" type="time" class="form-control" />
-        <span asp-validation-for="VisitTime" class="text-danger"></span>
-    </div>
+        @Html.AntiForgeryToken()
 
-    <div class="col-md-6">
-        <label asp-for="Condition" class="form-label"></label>
-        <input asp-for="Condition" class="form-control" placeholder="Condition" />
-        <span asp-validation-for="Condition" class="text-danger"></span>
-    </div>
+        <div asp-validation-summary="ModelOnly"
+             class="text-danger mb-3">
+        </div>
 
-    <div class="col-md-6">
-        <label asp-for="Diagnosis" class="form-label"></label>
-        <input asp-for="Diagnosis" class="form-control" placeholder="Diagnosis" />
-        <span asp-validation-for="Diagnosis" class="text-danger"></span>
-    </div>
+        <partial name="_Form" model="Model" />
 
-    <div class="col-md-6">
-        <label asp-for="Treatment" class="form-label"></label>
-        <input asp-for="Treatment" class="form-control" placeholder="Treatment" />
-        <span asp-validation-for="Treatment" class="text-danger"></span>
-    </div>
+        <div class="medical-history-actions">
+            <button type="submit"
+                    name="submitAction"
+                    value="save"
+                    class="btn btn-success">
+                Save Record
+            </button>
 
-    <div class="col-md-6">
-        <label asp-for="Dosage" class="form-label"></label>
-        <input asp-for="Dosage" class="form-control" placeholder="Dosage" />
-        <span asp-validation-for="Dosage" class="text-danger"></span>
-    </div>
+            <button type="submit"
+                    name="submitAction"
+                    value="send"
+                    class="btn btn-primary">
+                Send Record
+            </button>
 
-    <div class="col-md-6">
-        <label asp-for="Medication" class="form-label"></label>
-        <input asp-for="Medication" class="form-control" placeholder="Medication" />
-        <span asp-validation-for="Medication" class="text-danger"></span>
-    </div>
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back
+            </a>
+        </div>
 
-    <div class="col-12">
-        <label asp-for="Notes" class="form-label"></label>
-        <textarea asp-for="Notes" rows="3" class="form-control"></textarea>
-        <span asp-validation-for="Notes" class="text-danger"></span>
-    </div>
+    </form>
+</div>
 
-</div>  
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

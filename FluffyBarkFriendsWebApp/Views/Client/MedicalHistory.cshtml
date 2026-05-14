@@ -7,14 +7,9 @@
 <section class="page-panel">
 
     <div class="page-header">
+        <p class="eyebrow">Client Portal</p>
 
-        <p class="eyebrow">
-            Client Portal
-        </p>
-
-        <h1>
-            Medical History
-        </h1>
+        <h1>Medical History</h1>
 
         <p class="page-description">
             Review your pet medical records and treatments.
@@ -23,52 +18,39 @@
         <a asp-controller="Client"
            asp-action="Vaccination"
            class="pet-main-btn mt-3 mb-4">
-
             💉 View Vaccination
-
         </a>
-
     </div>
 
     <div class="table-responsive">
-
         <table class="table custom-table align-middle">
-
             <thead>
-
                 <tr>
+                    <th>Pet</th>
                     <th>Visit Date</th>
                     <th>Condition</th>
                     <th>Diagnosis</th>
                     <th>Treatment</th>
                     <th>Medication</th>
+                    <th>Notes</th>
                 </tr>
-
             </thead>
 
             <tbody>
-
                 @foreach (var item in Model)
                 {
                     <tr>
-
+                        <td>@item.Pet?.PetName</td>
                         <td>@item.VisitDate</td>
-
                         <td>@item.Condition</td>
-
                         <td>@item.Diagnosis</td>
-
                         <td>@item.Treatment</td>
-
                         <td>@item.Medication</td>
-
+                        <td>@(string.IsNullOrWhiteSpace(item.Notes) ? "No notes" : item.Notes)</td>
                     </tr>
                 }
-
             </tbody>
-
         </table>
-
     </div>
 
 </section>

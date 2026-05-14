@@ -3,20 +3,18 @@
 <div class="row g-3">
     <div class="col-md-6">
         <label asp-for="PetId" class="form-label"></label>
-        <input asp-for="PetId" class="form-control" placeholder="Enter Pet ID" />
+        <select asp-for="PetId" asp-items="Model.PetOptions" class="form-control">
+            <option value="">-- Select Pet --</option>
+        </select>
         <span asp-validation-for="PetId" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="AppointmentId" class="form-label"></label>
-        <input asp-for="AppointmentId" class="form-control" placeholder="Enter Appointment ID" />
+        <select asp-for="AppointmentId" asp-items="Model.AppointmentOptions" class="form-control">
+            <option value="">-- No Appointment --</option>
+        </select>
         <span asp-validation-for="AppointmentId" class="text-danger"></span>
-    </div>
-
-    <div class="col-md-6">
-        <label asp-for="RecordedByUserId" class="form-label"></label>
-        <input asp-for="RecordedByUserId" class="form-control" placeholder="Enter User ID" />
-        <span asp-validation-for="RecordedByUserId" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">

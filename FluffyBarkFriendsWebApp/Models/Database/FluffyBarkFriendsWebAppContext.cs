@@ -82,7 +82,7 @@ public partial class FluffyBarkFriendsWebAppContext : DbContext
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())").HasColumnType("datetime");
             entity.Property(e => e.Dose).HasMaxLength(30).IsUnicode(false);
-            entity.Property(e => e.Remarks).HasMaxLength(100).IsUnicode(false);
+            entity.Property(e => e.Remarks).HasMaxLength(255).IsUnicode(false);
             entity.Property(e => e.VaccineName).HasMaxLength(100).IsUnicode(false);
 
             entity.HasOne(d => d.Appointment)

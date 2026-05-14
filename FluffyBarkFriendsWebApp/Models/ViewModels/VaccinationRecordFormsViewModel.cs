@@ -27,16 +27,13 @@ namespace FluffyBarkFriendsWebApp.Models.ViewModels
 
         public string? Dose { get; set; }
 
+        [StringLength(255)]
         public string? Remarks { get; set; }
 
-        [Required(ErrorMessage = "Recorded by user is required.")]
         [Display(Name = "Recorded By")]
         public int RecordedByUserId { get; set; }
 
-        public List<SelectListItem> PetOptions { get; set; } = new List<SelectListItem>();
-
-        public List<SelectListItem> AppointmentOptions { get; set; } = new List<SelectListItem>();
-
-        public List<SelectListItem> UserOptions { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> PetOptions { get; set; } = new();
+        public List<SelectListItem> AppointmentOptions { get; set; } = new();
     }
 }

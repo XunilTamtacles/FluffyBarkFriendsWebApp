@@ -92,7 +92,7 @@
                                                 Your appointment is confirmed.
                                             </span>
                                         }
-                                        else if (appointment.Status == "Pending")
+                                        else if (appointment.Status == "Pending" || appointment.Status == "Draft")
                                         {
                                             <span class="text-warning fw-semibold">
                                                 Waiting for admin/staff approval.
@@ -122,7 +122,7 @@
 
                                         @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
                                         {
-                                            @if (appointment.Status == "Pending")
+                                            @if (appointment.Status == "Pending" || appointment.Status == "Draft")
                                             {
                                                 <form asp-controller="Appointment"
                                                       asp-action="Confirm"
@@ -157,6 +157,16 @@
                                                class="btn btn-sm btn-outline-primary rounded-pill">
                                                 Edit
                                             </a>
+
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                                <a asp-controller="Appointment"
+                                                   asp-action="Delete"
+                                                   asp-route-id="@appointment.AppointmentId"
+                                                   class="btn btn-sm btn-danger rounded-pill">
+                                                    Delete
+                                                </a>
+                                            }
                                         }
                                     </td>
                                 </tr>

@@ -1049,7 +1049,7 @@ body {
             gap: 14px;
         }
     }
-    /* Change Password / Forgot Password */
+  
     .change-password-btn {
         border: 2px solid var(--navy);
         color: var(--navy);
@@ -1077,7 +1077,7 @@ body {
         }
 
 
-    /* Appointment Form Design */
+ 
     .appointment-modal-card {
         max-width: 760px;
         margin: 48px auto;
@@ -1212,6 +1212,111 @@ body {
             grid-template-columns: 1fr;
             gap: 14px;
         }
+    }
+
+    .medical-history-card {
+        max-width: 1200px;
+        margin: 0 auto 60px;
+        background: #ffffff;
+        border-radius: 30px;
+        padding: 35px;
+        box-shadow: 0 18px 40px rgba(11, 53, 81, 0.10);
+    }
+
+    .medical-history-form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+        .medical-history-form .form-label {
+            font-weight: 900;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .medical-history-form .form-control,
+        .medical-history-form .form-select {
+            height: 52px;
+            border-radius: 14px;
+            border: 1px solid #dbeaf4;
+            background: #f8fcff;
+            padding: 12px 16px;
+        }
+
+        .medical-history-form textarea.form-control {
+            height: auto;
+            min-height: 120px;
+        }
+
+        .medical-history-form .form-control:focus,
+        .medical-history-form .form-select:focus {
+            border-color: var(--sky);
+            box-shadow: 0 0 0 4px rgba(9, 174, 234, 0.15);
+            background: #ffffff;
+        }
+
+    .medical-history-full {
+        grid-column: 1 / -1;
+    }
+
+    .medical-history-actions {
+        margin-top: 28px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+        .medical-history-actions .btn {
+            border-radius: 999px;
+            padding: 11px 28px;
+            font-weight: 900;
+        }
+
+    @media (max-width: 768px) {
+        .medical-history-form {
+            grid-template-columns: 1fr;
+        }
+
+        .medical-history-card {
+            margin: 20px 14px 50px;
+            padding: 24px;
+        }
+    }
+    .pet-form-grid .input-group-text {
+        height: 54px;
+        border-radius: 0 16px 16px 0;
+        border: 1px solid #dbeaf4;
+        background: #eef7fc;
+        font-weight: 800;
+        color: var(--navy);
+    }
+
+    .pet-form-grid .input-group .form-control {
+        border-radius: 16px 0 0 16px;
+    }
+
+    .pet-form-grid .form-control,
+    .pet-form-grid .form-select {
+        font-size: 15px;
+        font-weight: 500;
+        transition: 0.3s ease;
+    }
+
+        .pet-form-grid .form-control::placeholder {
+            color: #9aa7b4;
+        }
+
+    .pet-form-grid .form-label {
+        margin-bottom: 10px;
+        font-size: 15px;
+        letter-spacing: 0.3px;
+    }
+
+    .pet-form-grid .text-danger {
+        display: block;
+        margin-top: 6px;
+        font-size: 13px;
     }
 
 
