@@ -16,6 +16,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         public async Task<List<Pet>> GetAllAsync()
         {
             return await _context.Pets
+                .Include(p => p.OwnerUser)
                 .Where(p => p.IsActive)
                 .OrderBy(p => p.PetName)
                 .ToListAsync();
@@ -24,19 +25,24 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
         public async Task<Pet?> GetByIdAsync(int id)
         {
             return await _context.Pets
+                .Include(p => p.OwnerUser)
                 .FirstOrDefaultAsync(p => p.PetId == id && p.IsActive);
         }
 
         public async Task<List<Pet>> SearchAsync(string searchTerm)
         {
-            var query = _context.Pets.Where(p => p.IsActive);
+            var query = _context.Pets
+                .Include(p => p.OwnerUser)
+                .Where(p => p.IsActive);
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query = query.Where(p =>
                     p.PetName.Contains(searchTerm) ||
                     p.Species.Contains(searchTerm) ||
-                    (p.Breed != null && p.Breed.Contains(searchTerm))
+                    (p.Breed != null && p.Breed.Contains(searchTerm)) ||
+                    (p.OwnerName != null && p.OwnerName.Contains(searchTerm)) ||
+                    (p.OwnerUser != null && p.OwnerUser.FullName.Contains(searchTerm))
                 );
             }
 
@@ -59,7 +65,7 @@ namespace FluffyBarkFriendsWebApp.Views.Repositories.Implementation
 
         public async Task DeleteAsync(Pet pet)
         {
-            pet.IsActive = false; 
+            pet.IsActive = false;
             _context.Pets.Update(pet);
             await _context.SaveChangesAsync();
         }

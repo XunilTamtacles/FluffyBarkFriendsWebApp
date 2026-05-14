@@ -6,25 +6,23 @@
 <div class="row g-3">
     <div class="col-md-6">
         <label asp-for="PetId" class="form-label">Pet</label>
-        <input asp-for="PetId"
-               class="form-control"
-               placeholder="Enter Pet ID" />
+        <select asp-for="PetId"
+                asp-items="Model.PetOptions"
+                class="form-control">
+            <option value="">-- Select Pet --</option>
+        </select>
         <span asp-validation-for="PetId" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="AppointmentDate" class="form-label"></label>
-        <input asp-for="AppointmentDate"
-               type="date"
-               class="form-control" />
+        <input asp-for="AppointmentDate" type="date" class="form-control" />
         <span asp-validation-for="AppointmentDate" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="AppointmentTime" class="form-label"></label>
-        <input asp-for="AppointmentTime"
-               type="time"
-               class="form-control" />
+        <input asp-for="AppointmentTime" type="time" class="form-control" />
         <span asp-validation-for="AppointmentTime" class="text-danger"></span>
     </div>
 

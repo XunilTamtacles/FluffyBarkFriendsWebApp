@@ -6,27 +6,43 @@
 
 <section class="page-panel">
     <span class="eyebrow">Appointment Management</span>
+
     <h1>Create Appointment</h1>
+
     <p>Add a new appointment schedule for a pet visit.</p>
 </section>
 
-<form asp-action="Create" method="post" class="page-panel">
-    @Html.AntiForgeryToken()
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
 
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <form asp-action="Create" method="post">
 
-    <partial name="_Form" model="Model" />
+            @Html.AntiForgeryToken()
 
-    <div class="mt-4 d-flex gap-2">
-        <button type="submit" class="btn btn-success rounded-pill px-4">
-            Save Appointment
-        </button>
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
 
-        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
-            Back
-        </a>
+            <partial name="_Form" model="Model" />
+
+            <div class="mt-4 d-flex gap-2">
+
+                <button type="submit"
+                        class="btn btn-success rounded-pill px-4">
+                    Send Appointment
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary rounded-pill px-4">
+                    Back
+                </a>
+
+            </div>
+
+        </form>
+
     </div>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

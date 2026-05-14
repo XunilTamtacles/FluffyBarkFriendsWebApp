@@ -35,6 +35,8 @@
                 <table class="table align-middle">
                     <thead>
                         <tr>
+                            <th>Pet ID</th>
+                            <th>Owner</th>
                             <th>Pet</th>
                             <th>Species</th>
                             <th>Breed</th>
@@ -50,6 +52,22 @@
                         @foreach (var item in Model)
                         {
                             <tr>
+                                <td>
+                                    <span class="badge rounded-pill bg-dark px-3 py-2">
+                                        PET-@item.PetId
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="fw-semibold">
+                                        @(item.OwnerUser?.FullName ?? item.OwnerName ?? "No Owner")
+                                    </span>
+                                    <br />
+                                    <small class="text-muted">
+                                        User ID: @(item.OwnerUserId?.ToString() ?? "N/A")
+                                    </small>
+                                </td>
+
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center"

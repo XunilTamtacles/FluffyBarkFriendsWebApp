@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FluffyBarkFriendsWebApp.Models.ViewModels
 {
@@ -24,7 +25,7 @@ namespace FluffyBarkFriendsWebApp.Models.ViewModels
 
         [Required(ErrorMessage = "Status is required.")]
         [StringLength(100)]
-        public string Status { get; set; } = "Pending";
+        public string Status { get; set; } = "Draft";
 
         [StringLength(255)]
         public string? Remarks { get; set; }
@@ -32,5 +33,7 @@ namespace FluffyBarkFriendsWebApp.Models.ViewModels
         [Required(ErrorMessage = "Created by user is required.")]
         [Display(Name = "Created By User")]
         public int CreatedByUserId { get; set; }
+
+        public List<SelectListItem> PetOptions { get; set; } = new();
     }
 }
